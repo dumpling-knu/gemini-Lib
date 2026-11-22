@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>구글 스튜던트 앰버서더 경북대 x 공식당 이벤트</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Gothic+A1:wght@400;600;700;800&family=Jua&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    /* Custom Styling & Utilities */
+    body {
+      font-family: 'Gothic A1', sans-serif;
+      background-color: #ffd43b;
+      color: #22190a;
+      word-break: keep-all;
+      overflow-x: hidden;
+      margin: 0;
+      padding: 0;
+    }
+
+    .font-jua {
+      font-family: 'Jua', sans-serif;
+    }
+
+    /* Crisp text drop shadow */
+    .title-shadow {
+      text-shadow: 2px 2px 0px #22190a;
+    }
+
+    /* Sticker card with 6px offset shadow */
+    .sticker-card {
+      background-color: #ffffff;
+      border: 3px solid #22190a;
+      border-radius: 1.25rem;
+      box-shadow: 6px 6px 0px #22190a;
+    }
+
+    /* 3D Yellow / Red Pill Buttons */
+    .btn-pill-yellow {
+      background-color: #ffd43b;
+      color: #22190a;
+      border: 3px solid #22190a;
+      box-shadow: 4px 4px 0px #22190a;
+      transition: all 0.15s ease-in-out;
+    }
+    .btn-pill-yellow:hover:not(:disabled) {
+      transform: translate(-2px, -2px);
+      box-shadow: 6px 6px 0px #22190a;
+    }
+    .btn-pill-yellow:active:not(:disabled) {
+      transform: translate(2px, 2px);
+      box-shadow: 2px 2px 0px #22190a;
+    }
+
+    .btn-pill-red {
+      background-color: #e8452c;
+      color: #ffffff;
+      border: 3px solid #22190a;
+      box-shadow: 4px 4px 0px #22190a;
+      transition: all 0.15s ease-in-out;
+    }
+    .btn-pill-red:hover:not(:disabled) {
+      transform: translate(-2px, -2px);
+      box-shadow: 6px 6px 0px #22190a;
+    }
+    .btn-pill-red:active:not(:disabled) {
+      transform: translate(2px, 2px);
+      box-shadow: 2px 2px 0px #22190a;
+    }
+
+    .btn-pill-green {
+      background-color: #2b9348;
+      color: #ffffff;
+      border: 3px solid #22190a;
+      box-shadow: 4px 4px 0px #22190a;
+      transition: all 0.15s ease-in-out;
+    }
+    .btn-pill-green:hover:not(:disabled) {
+      transform: translate(-2px, -2px);
+      box-shadow: 6px 6px 0px #22190a;
+    }
+    .btn-pill-green:active:not(:disabled) {
+      transform: translate(2px, 2px);
+      box-shadow: 2px 2px 0px #22190a;
+    }
+
+    .btn-pill-light {
+      background-color: #f1f5f9;
+      color: #22190a;
+      border: 3px solid #22190a;
+      box-shadow: 4px 4px 0px #22190a;
+      transition: all 0.15s ease-in-out;
+    }
+    .btn-pill-light:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 6px 6px 0px #22190a;
+    }
+    .btn-pill-light:active {
+      transform: translate(2px, 2px);
+      box-shadow: 2px 2px 0px #22190a;
+    }
+
+    /* Door Transition Animations */
+    .door-left-open {
+      transform: translateX(-95%);
+      transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .door-right-open {
+      transform: translateX(95%);
+      transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes bellRing {
+      0%, 100% { transform: rotate(0deg); }
+      20% { transform: rotate(25deg); }
+      40% { transform: rotate(-20deg); }
+      60% { transform: rotate(15deg); }
+      80% { transform: rotate(-10deg); }
+    }
+    .ring-bell {
+      animation: bellRing 0.6s ease-in-out;
+      transform-origin: top center;
+    }
+
+    /* Meal Tray Drop Bounce Animation */
+    @keyframes trayDrop {
+      0% { opacity: 0; transform: translateY(-40px) scale(0.9); }
+      60% { opacity: 1; transform: translateY(8px) scale(1.02); }
+      80% { transform: translateY(-4px) scale(0.99); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .anim-tray-drop {
+      animation: trayDrop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+
+    /* Tonkatsu Drop Bounce Animation */
+    @keyframes katsuDrop {
+      0% { opacity: 0; transform: translateY(-30px) scale(0.85); }
+      70% { opacity: 1; transform: translateY(4px) scale(1.05); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .anim-katsu-drop {
+      animation: katsuDrop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+
+    /* Steam animation */
+    @keyframes steamRise {
+      0% { opacity: 0; transform: translateY(0) scaleX(0.8); }
+      50% { opacity: 0.8; transform: translateY(-8px) scaleX(1.1); }
+      100% { opacity: 0; transform: translateY(-16px) scaleX(0.9); }
+    }
+    .steam-line-1 { animation: steamRise 2s infinite ease-out 0s; }
+    .steam-line-2 { animation: steamRise 2s infinite ease-out 0.6s; }
+    .steam-line-3 { animation: steamRise 2s infinite ease-out 1.2s; }
+
+    /* Sparkle pulse */
+    @keyframes sparklePulse {
+      0%, 100% { opacity: 0.3; transform: scale(0.8); }
+      50% { opacity: 1; transform: scale(1.2); }
+    }
+    .sparkle { animation: sparklePulse 1.5s infinite ease-in-out; }
+
+    /* Student silhouette movement inside intro entrance */
+    @keyframes moveSilhouettes {
+      0%, 100% { transform: translateX(0); }
+      50% { transform: translateX(12px); }
+    }
+    .silhouettes {
+      animation: moveSilhouettes 6s ease-in-out infinite;
+    }
+
+    /* Prefers reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      *, ::before, ::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-start p-4 sm:p-6">
+
+  <!-- ========================================== -->
+  <!-- SCREEN 1: STORE ENTRANCE INTRO SCREEN      -->
+  <!-- ========================================== -->
+  <div id="intro-screen" class="w-full max-w-md min-h-[90vh] flex flex-col items-center justify-between transition-all duration-700">
+    
+    <!-- Header Pill & Titles -->
+    <div class="w-full flex flex-col items-center text-center mt-2">
+      <!-- Top Black Pill Badge -->
+      <div class="inline-flex items-center px-4 py-1.5 rounded-full bg-[#22190a] text-white text-xs sm:text-sm font-bold tracking-wide shadow-md mb-4">
+        <span>구글 스튜던트 앰버서더 경북대 x 공식당</span>
+      </div>
+
+      <!-- Title & Subtitle -->
+      <h1 class="font-jua text-3xl sm:text-4xl text-[#22190a] leading-tight mb-2">
+        공식당 문을 열고<br>
+        <span class="text-[#e8452c]">들어가 볼까요?</span>
+      </h1>
+      <p class="text-sm sm:text-base font-semibold text-[#22190a]/80">
+        오늘도 따끈한 밥이 기다리고 있어요
+      </p>
+    </div>
+
+    <!-- Store Entrance Inline SVG -->
+    <div id="entrance-container" class="w-full relative my-4 rounded-2xl border-4 border-[#22190a] bg-[#fffdfa] shadow-[6px_6px_0px_#22190a] overflow-hidden">
+      <!-- Door opening zoom effect wrapper -->
+      <div id="door-wrapper" class="w-full transition-transform duration-800 ease-in-out origin-center">
+        <svg viewBox="0 0 400 380" class="w-full h-auto block" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <clipPath id="door-left-clip">
+              <rect x="110" y="160" width="88" height="180" />
+            </clipPath>
+            <clipPath id="door-right-clip">
+              <rect x="202" y="160" width="88" height="180" />
+            </clipPath>
+            <pattern id="mint-tile-pattern" width="20" height="20" patternUnits="userSpaceOnUse">
+              <rect width="20" height="20" fill="#cbf3f0" stroke="#a2d2ff" stroke-width="0.8"/>
+            </pattern>
+          </defs>
+
+          <!-- Store Background Outer Wall -->
+          <!-- Cream Upper Wall -->
+          <rect x="0" y="0" width="400" height="200" fill="#fff9ec" />
+          <!-- Mint Tile Lower Wall -->
+          <rect x="0" y="200" width="400" height="180" fill="url(#mint-tile-pattern)" />
+
+          <!-- Sparkles on Upper Wall -->
+          <path class="sparkle" d="M 50 40 L 53 48 L 61 51 L 53 54 L 50 62 L 47 54 L 39 51 L 47 48 Z" fill="#ffd43b" />
+          <path class="sparkle" style="animation-delay: 0.5s;" d="M 340 50 L 342 56 L 348 58 L 342 60 L 340 66 L 338 60 L 332 58 L 338 56 Z" fill="#ffd43b" />
+
+          <!-- Bunting Garland Banner (Top) -->
+          <path d="M 0 10 Q 100 35 200 10 Q 300 35 400 10" fill="none" stroke="#22190a" stroke-width="2.5" />
+          <!-- Triangle Flags -->
+          <polygon points="20,13 40,13 30,38" fill="#e8452c" stroke="#22190a" stroke-width="1.5" />
+          <polygon points="60,18 80,18 70,43" fill="#ffd43b" stroke="#22190a" stroke-width="1.5" />
+          <polygon points="100,20 120,20 110,45" fill="#ffffff" stroke="#22190a" stroke-width="1.5" />
+          <polygon points="140,18 160,18 150,43" fill="#e8452c" stroke="#22190a" stroke-width="1.5" />
+          <polygon points="180,13 200,13 190,38" fill="#ffd43b" stroke="#22190a" stroke-width="1.5" />
+          <polygon points="200,13 220,13 210,38" fill="#ffffff" stroke="#22190a" stroke-width="1.5" />
+          <polygon points="240,18 260,18 250,43" fill="#e8452c" stroke="#22190a" stroke-width="1.5" />
+          <polygon points="280,20 300,20 290,45" fill="#ffd43b" stroke="#22190a" stroke-width="1.5" />
+          <polygon points="320,18 340,18 330,43" fill="#ffffff" stroke="#22190a" stroke-width="1.5" />
+          <polygon points="360,13 380,13 370,38" fill="#e8452c" stroke="#22190a" stroke-width="1.5" />
+
+          <!-- Round Sign Above Awning -->
+          <circle cx="200" cy="72" r="32" fill="#22190a" />
+          <circle cx="200" cy="72" r="29" fill="#ffffff" stroke="#22190a" stroke-width="2" />
+          <text x="200" y="78" font-family="Jua" font-size="18" font-weight="bold" fill="#22190a" text-anchor="middle">공식당</text>
+
+          <!-- Red-and-White Scalloped Awning -->
+          <path d="M 70 100 L 330 100 L 345 130 L 55 130 Z" fill="#e8452c" stroke="#22190a" stroke-width="3" />
+          <!-- Awning Stripes -->
+          <path d="M 100 100 L 105 130 L 135 130 L 130 100 Z" fill="#ffffff" stroke="#22190a" stroke-width="2" />
+          <path d="M 160 100 L 165 130 L 195 130 L 190 100 Z" fill="#ffffff" stroke="#22190a" stroke-width="2" />
+          <path d="M 220 100 L 225 130 L 255 130 L 250 100 Z" fill="#ffffff" stroke="#22190a" stroke-width="2" />
+          <path d="M 280 100 L 285 130 L 315 130 L 310 100 Z" fill="#ffffff" stroke="#22190a" stroke-width="2" />
+          <!-- Awning Scallop Bottom -->
+          <path d="M 55 130 Q 65 142 75 130 Q 85 142 95 130 Q 105 142 115 130 Q 125 142 135 130 Q 145 142 155 130 Q 165 142 175 130 Q 185 142 195 130 Q 205 142 215 130 Q 225 142 235 130 Q 245 142 255 130 Q 265 142 275 130 Q 285 142 295 130 Q 305 142 315 130 Q 325 142 335 130 Q 345 142 345 130" fill="#e8452c" stroke="#22190a" stroke-width="2"/>
+
+          <!-- Interior Backdrop Visible Behind Door Frame -->
+          <g id="interior-view">
+            <!-- Warm yellow interior light -->
+            <rect x="105" y="155" width="190" height="190" fill="#fff3c4" />
+            <!-- Interior Dining Tables & Pendant Lights -->
+            <ellipse cx="140" cy="280" rx="30" ry="12" fill="#e2b87e" stroke="#22190a" stroke-width="1.5" />
+            <rect x="137" y="292" width="6" height="30" fill="#8d5b28" />
+            <ellipse cx="260" cy="280" rx="30" ry="12" fill="#e2b87e" stroke="#22190a" stroke-width="1.5" />
+            <rect x="257" y="292" width="6" height="30" fill="#8d5b28" />
+
+            <!-- Animated Student Silhouettes inside -->
+            <g class="silhouettes" fill="#22190a" opacity="0.35">
+              <!-- Student 1 sitting left -->
+              <circle cx="130" cy="255" r="8" />
+              <path d="M 118 278 C 118 263 142 263 142 278 Z" />
+              <!-- Student 2 sitting right -->
+              <circle cx="270" cy="252" r="8" />
+              <path d="M 258 275 C 258 260 282 260 282 275 Z" />
+            </g>
+
+            <!-- Warm Pendant Light Lamps hanging from interior ceiling -->
+            <line x1="150" y1="155" x2="150" y2="185" stroke="#22190a" stroke-width="2" />
+            <path d="M 138 195 Q 150 180 162 195 Z" fill="#ffd43b" stroke="#22190a" stroke-width="2" />
+            <circle cx="150" cy="196" r="4" fill="#ffffff" />
+
+            <line x1="250" y1="155" x2="250" y2="185" stroke="#22190a" stroke-width="2" />
+            <path d="M 238 195 Q 250 180 262 195 Z" fill="#ffd43b" stroke="#22190a" stroke-width="2" />
+            <circle cx="250" cy="196" r="4" fill="#ffffff" />
+          </g>
+
+          <!-- Outer Door Structure / Frame -->
+          <rect x="100" y="150" width="200" height="195" fill="none" stroke="#22190a" stroke-width="5" />
+          <line x1="200" y1="150" x2="200" y2="345" stroke="#22190a" stroke-width="3" />
+
+          <!-- LEFT GLASS DOOR -->
+          <g id="left-door" class="transition-transform duration-800">
+            <!-- Wooden Frame -->
+            <rect x="105" y="155" width="93" height="188" fill="#b07d4f" stroke="#22190a" stroke-width="2.5" />
+            <!-- Glass Panes (Upper & Lower) -->
+            <rect x="113" y="165" width="77" height="100" fill="#a5f3fc" fill-opacity="0.55" stroke="#22190a" stroke-width="2" />
+            <rect x="113" y="273" width="77" height="62" fill="#a5f3fc" fill-opacity="0.55" stroke="#22190a" stroke-width="2" />
+            <!-- Glass Diagonal Reflection Lines -->
+            <line x1="120" y1="175" x2="160" y2="255" stroke="#ffffff" stroke-width="3" stroke-linecap="round" opacity="0.8" />
+            <line x1="135" y1="175" x2="175" y2="255" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" opacity="0.8" />
+            <!-- Handle -->
+            <rect x="185" y="235" width="8" height="30" rx="3" fill="#ffd43b" stroke="#22190a" stroke-width="2" />
+          </g>
+
+          <!-- RIGHT GLASS DOOR -->
+          <g id="right-door" class="transition-transform duration-800">
+            <!-- Wooden Frame -->
+            <rect x="202" y="155" width="93" height="188" fill="#b07d4f" stroke="#22190a" stroke-width="2.5" />
+            <!-- Glass Panes (Upper & Lower) -->
+            <rect x="210" y="165" width="77" height="100" fill="#a5f3fc" fill-opacity="0.55" stroke="#22190a" stroke-width="2" />
+            <rect x="210" y="273" width="77" height="62" fill="#a5f3fc" fill-opacity="0.55" stroke="#22190a" stroke-width="2" />
+            <!-- Glass Diagonal Reflection Lines -->
+            <line x1="217" y1="175" x2="257" y2="255" stroke="#ffffff" stroke-width="3" stroke-linecap="round" opacity="0.8" />
+            <line x1="232" y1="175" x2="272" y2="255" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" opacity="0.8" />
+            <!-- Handle -->
+            <rect x="207" y="235" width="8" height="30" rx="3" fill="#ffd43b" stroke="#22190a" stroke-width="2" />
+          </g>
+
+          <!-- Hanging Bell Above Door Frame -->
+          <g id="door-bell" class="origin-top">
+            <line x1="200" y1="135" x2="200" y2="146" stroke="#22190a" stroke-width="2" />
+            <path d="M 194 153 Q 200 144 206 153 Z" fill="#ffd43b" stroke="#22190a" stroke-width="2" />
+            <circle cx="200" cy="154" r="2" fill="#22190a" />
+          </g>
+
+          <!-- OPEN Sign Hanging on Door -->
+          <rect x="160" y="200" width="40" height="20" rx="4" fill="#e8452c" stroke="#22190a" stroke-width="2" />
+          <text x="180" y="214" font-family="Jua" font-size="10" fill="#ffffff" font-weight="bold" text-anchor="middle">OPEN</text>
+
+          <!-- Red Flower Pots On Sides -->
+          <!-- Left Flower Pot -->
+          <polygon points="25,310 45,310 40,345 30,345" fill="#e8452c" stroke="#22190a" stroke-width="2" />
+          <circle cx="30" cy="300" r="10" fill="#2b9348" stroke="#22190a" stroke-width="1.5" />
+          <circle cx="40" cy="298" r="12" fill="#38b000" stroke="#22190a" stroke-width="1.5" />
+          <circle cx="35" cy="290" r="9" fill="#0077b6" stroke="#22190a" stroke-width="1.5" />
+          
+          <!-- Right Flower Pot -->
+          <polygon points="355,310 375,310 370,345 360,345" fill="#e8452c" stroke="#22190a" stroke-width="2" />
+          <circle cx="360" cy="300" r="10" fill="#2b9348" stroke="#22190a" stroke-width="1.5" />
+          <circle cx="370" cy="298" r="12" fill="#38b000" stroke="#22190a" stroke-width="1.5" />
+          <circle cx="365" cy="290" r="9" fill="#e8452c" stroke="#22190a" stroke-width="1.5" />
+
+          <!-- Welcome Doormat -->
+          <rect x="135" y="348" width="130" height="22" rx="4" fill="#e8452c" stroke="#22190a" stroke-width="2.5" />
+          <text x="200" y="363" font-family="Jua" font-size="13" fill="#ffffff" font-weight="bold" text-anchor="middle" letter-spacing="2">WELCOME</text>
+        </svg>
+      </div>
+
+      <!-- Flash overlay for smooth transition into main screen -->
+      <div id="flash-overlay" class="absolute inset-0 bg-white opacity-0 pointer-events-none transition-opacity duration-300"></div>
+    </div>
+
+    <!-- Start Button -->
+    <div class="w-full pb-4">
+      <button id="btn-start" onclick="handleStart()" class="w-full min-h-[52px] btn-pill-yellow font-jua text-xl py-3 px-6 rounded-2xl flex items-center justify-center gap-2">
+        <span>시작하기</span>
+        <span class="text-2xl">›</span>
+      </button>
+    </div>
+  </div>
+
+
+  <!-- ========================================== -->
+  <!-- SCREEN 2: MAIN EVENT RELAY SCREEN          -->
+  <!-- ========================================== -->
+  <div id="main-screen" class="hidden w-full max-w-md flex-col items-center gap-6 my-2 transition-all duration-700">
+
+    <!-- Top Badge & Main Header -->
+    <div class="w-full flex flex-col items-center text-center">
+      <!-- Top Black Pill Badge -->
+      <div class="inline-flex items-center px-4 py-1.5 rounded-full bg-[#22190a] text-white text-xs sm:text-sm font-bold tracking-wide shadow-md mb-3">
+        <span>구글 스튜던트 앰버서더 경북대 x 공식당</span>
+      </div>
+
+      <!-- Main Title -->
+      <h1 class="font-jua text-3xl sm:text-4xl text-[#22190a] leading-tight mb-2">
+        공식당에서 밥 먹고,<br>
+        <span class="text-[#e8452c]">푸짐한 상품 받아가자!</span>
+      </h1>
+
+      <!-- Subtitle with exact 2-line break -->
+      <p class="text-sm sm:text-base font-semibold text-[#22190a]/85 leading-relaxed">
+        사진 두 장이면 이벤트 참여 끝!<br>
+        식판을 채우고 공식당 소식도 받아보세요.
+      </p>
+    </div>
+
+    <!-- Cafeteria Interior Dynamic SVG Card -->
+    <div class="w-full sticker-card overflow-hidden flex flex-col">
+      <!-- Cafeteria SVG Scene (viewBox 0 0 480 360) -->
+      <div class="w-full bg-[#fffcf5] relative">
+        <svg viewBox="0 0 480 360" class="w-full h-auto block" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <pattern id="mint-tile-pattern-inside" width="16" height="16" patternUnits="userSpaceOnUse">
+              <rect width="16" height="16" fill="#d8f3dc" stroke="#b7e4c7" stroke-width="0.8"/>
+            </pattern>
+          </defs>
+
+          <!-- UPPER WALL (60% Height = Y: 0~216) -->
+          <rect x="0" y="0" width="480" height="135" fill="#fff8e7" />
+          <rect x="0" y="135" width="480" height="81" fill="url(#mint-tile-pattern-inside)" />
+          <line x1="0" y1="216" x2="480" y2="216" stroke="#22190a" stroke-width="3" />
+
+          <!-- Top Triangular Bunting Garland Banner -->
+          <path d="M 0 8 Q 120 25 240 8 Q 360 25 480 8" fill="none" stroke="#22190a" stroke-width="2" />
+          <polygon points="15,9 35,9 25,28" fill="#e8452c" stroke="#22190a" stroke-width="1" />
+          <polygon points="55,14 75,14 65,33" fill="#ffd43b" stroke="#22190a" stroke-width="1" />
+          <polygon points="95,17 115,17 105,36" fill="#ffffff" stroke="#22190a" stroke-width="1" />
+          <polygon points="135,15 155,15 145,34" fill="#e8452c" stroke="#22190a" stroke-width="1" />
+          <polygon points="175,10 195,10 185,29" fill="#ffd43b" stroke="#22190a" stroke-width="1" />
+          <polygon points="215,9 235,9 225,28" fill="#ffffff" stroke="#22190a" stroke-width="1" />
+          <polygon points="255,9 275,9 265,28" fill="#e8452c" stroke="#22190a" stroke-width="1" />
+          <polygon points="295,14 315,14 305,33" fill="#ffd43b" stroke="#22190a" stroke-width="1" />
+          <polygon points="335,17 355,17 345,36" fill="#ffffff" stroke="#22190a" stroke-width="1" />
+          <polygon points="375,15 395,15 385,34" fill="#e8452c" stroke="#22190a" stroke-width="1" />
+          <polygon points="415,10 435,10 425,29" fill="#ffd43b" stroke="#22190a" stroke-width="1" />
+          <polygon points="455,9 475,9 465,28" fill="#ffffff" stroke="#22190a" stroke-width="1" />
+
+          <!-- Left Window (Sun, Sky, Green Hills) -->
+          <g id="window">
+            <rect x="25" y="45" width="85" height="95" rx="6" fill="#e0f2fe" stroke="#22190a" stroke-width="2.5" />
+            <!-- Sun & Hills -->
+            <circle cx="85" cy="65" r="14" fill="#ffd43b" />
+            <path d="M 25 120 Q 55 100 85 115 Q 100 120 110 125 L 110 140 L 25 140 Z" fill="#74c69d" stroke="#22190a" stroke-width="1.5" />
+            <!-- Window Cross Frame -->
+            <line x1="67.5" y1="45" x2="67.5" y2="140" stroke="#22190a" stroke-width="2" />
+            <line x1="25" y1="92.5" x2="110" y2="92.5" stroke="#22190a" stroke-width="2" />
+          </g>
+
+          <!-- Wall Clock (Fixed 12:30) -->
+          <g id="wall-clock">
+            <circle cx="145" cy="55" r="18" fill="#ffffff" stroke="#22190a" stroke-width="2.5" />
+            <circle cx="145" cy="55" r="2" fill="#22190a" />
+            <!-- Hour Hand pointing to 12 -->
+            <line x1="145" y1="55" x2="145" y2="43" stroke="#22190a" stroke-width="2.5" stroke-linecap="round" />
+            <!-- Minute Hand pointing to 6 (12:30) -->
+            <line x1="145" y1="55" x2="145" y2="67" stroke="#e8452c" stroke-width="2" stroke-linecap="round" />
+          </g>
+
+          <!-- Green Chalkboard Menu -->
+          <g id="chalkboard">
+            <rect x="185" y="40" width="135" height="90" rx="5" fill="#1b4332" stroke="#22190a" stroke-width="3" />
+            <rect x="189" y="44" width="127" height="82" rx="3" fill="none" stroke="#2d6a4f" stroke-width="1.5" />
+            <text x="252.5" y="59" font-family="Jua" font-size="11" fill="#ffd43b" font-weight="bold" text-anchor="middle">★ 오늘의 메뉴 ★</text>
+            <text x="252.5" y="77" font-family="Jua" font-size="12" fill="#ffffff" text-anchor="middle">수제 왕 돈까스</text>
+            <text x="252.5" y="94" font-family="Gothic A1" font-size="9" fill="#d8f3dc" font-weight="bold" text-anchor="middle">쌀밥 · 두부 된장국</text>
+            <text x="252.5" y="109" font-family="Gothic A1" font-size="9" fill="#d8f3dc" font-weight="bold" text-anchor="middle">배추김치 · 시금치나물</text>
+          </g>
+
+          <!-- Right Stainless Steel Serving Counter -->
+          <g id="serving-counter">
+            <!-- Counter Top Bar -->
+            <rect x="335" y="140" width="130" height="76" fill="#ced4da" stroke="#22190a" stroke-width="2.5" />
+            <rect x="335" y="135" width="130" height="12" fill="#adb5bd" stroke="#22190a" stroke-width="2" />
+            
+            <!-- 3 Stainless Food Pans -->
+            <rect x="343" y="152" width="34" height="28" rx="3" fill="#e9ecef" stroke="#22190a" stroke-width="1.5" />
+            <rect x="383" y="152" width="34" height="28" rx="3" fill="#e9ecef" stroke="#22190a" stroke-width="1.5" />
+            <rect x="423" y="152" width="34" height="28" rx="3" fill="#e9ecef" stroke="#22190a" stroke-width="1.5" />
+
+            <!-- Food Pan Contents Mockup -->
+            <!-- Pan 1: Kimchi/Red food -->
+            <circle cx="360" cy="166" r="8" fill="#e8452c" opacity="0.8" />
+            <!-- Pan 2: Soup/Brown -->
+            <ellipse cx="400" cy="166" rx="10" ry="6" fill="#c97c36" opacity="0.8" />
+            <!-- Pan 3: Main/Golden Tonkatsu -->
+            <ellipse cx="440" cy="166" rx="11" ry="7" fill="#e5a100" opacity="0.85" />
+
+            <!-- Serving Ladles & Handles -->
+            <path d="M 360 162 L 354 144" stroke="#22190a" stroke-width="2" stroke-linecap="round" />
+            <path d="M 400 162 L 394 144" stroke="#22190a" stroke-width="2" stroke-linecap="round" />
+            
+            <!-- Steam from hot food -->
+            <path class="steam-line-1" d="M 395 140 Q 392 132 396 125" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" />
+            <path class="steam-line-2" d="M 438 140 Q 435 130 440 120" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" />
+
+            <!-- Round Gongstaurant Sign Hanging Above Counter -->
+            <circle cx="400" cy="55" r="22" fill="#22190a" />
+            <circle cx="400" cy="55" r="19" fill="#ffffff" stroke="#22190a" stroke-width="1.5" />
+            <text x="400" y="59" font-family="Jua" font-size="12" fill="#22190a" text-anchor="middle">공식당</text>
+          </g>
+
+          <!-- Red Flower Pot on Wall Shelf -->
+          <g id="pot-shelf">
+            <line x1="330" y1="100" x2="370" y2="100" stroke="#22190a" stroke-width="2.5" />
+            <polygon points="342,82 358,82 355,100 345,100" fill="#e8452c" stroke="#22190a" stroke-width="1.5" />
+            <circle cx="350" cy="76" r="7" fill="#2b9348" stroke="#22190a" stroke-width="1" />
+          </g>
+
+          <!-- Red Chair Backs behind Dining Table -->
+          <rect x="65" y="185" width="40" height="32" rx="5" fill="#e8452c" stroke="#22190a" stroke-width="2" />
+          <line x1="75" y1="217" x2="75" y2="230" stroke="#22190a" stroke-width="2" />
+          <line x1="95" y1="217" x2="95" y2="230" stroke="#22190a" stroke-width="2" />
+
+          <rect x="375" y="185" width="40" height="32" rx="5" fill="#e8452c" stroke="#22190a" stroke-width="2" />
+          <line x1="385" y1="217" x2="385" y2="230" stroke="#22190a" stroke-width="2" />
+          <line x1="405" y1="217" x2="405" y2="230" stroke="#22190a" stroke-width="2" />
+
+
+          <!-- BOTTOM 40% (DINING TABLE Y: 216 ~ 360) -->
+          <!-- Wooden Tabletop Surface -->
+          <rect x="0" y="216" width="480" height="144" fill="#e2b87e" />
+          <!-- Table Edge / Bevel -->
+          <rect x="0" y="216" width="480" height="14" fill="#d4a366" stroke="#22190a" stroke-width="1.5" />
+          <line x1="0" y1="230" x2="480" y2="230" stroke="#22190a" stroke-width="2.5" />
+
+          <!-- Left Cutlery: Stainless Spoon & Chopsticks -->
+          <g id="cutlery-left">
+            <!-- Cutlery Rest Mat -->
+            <rect x="30" y="270" width="40" height="60" rx="4" fill="#ffffff" stroke="#22190a" stroke-width="1.5" opacity="0.7" />
+            <!-- Spoon -->
+            <ellipse cx="42" cy="282" rx="6" ry="9" fill="#e9ecef" stroke="#22190a" stroke-width="1.5" />
+            <line x1="42" y1="291" x2="42" y2="322" stroke="#22190a" stroke-width="2" stroke-linecap="round" />
+            <!-- Chopsticks -->
+            <line x1="56" y1="275" x2="54" y2="325" stroke="#22190a" stroke-width="2" stroke-linecap="round" />
+            <line x1="62" y1="275" x2="60" y2="325" stroke="#22190a" stroke-width="2" stroke-linecap="round" />
+          </g>
+
+          <!-- Right Cutlery/Water Glass -->
+          <g id="water-glass-right">
+            <rect x="405" y="260" width="32" height="42" rx="4" fill="#a5f3fc" fill-opacity="0.6" stroke="#22190a" stroke-width="2" />
+            <!-- Water level -->
+            <rect x="407" y="274" width="28" height="26" rx="2" fill="#38bdf8" fill-opacity="0.5" />
+            <!-- Glass glare -->
+            <line x1="411" y1="265" x2="411" y2="295" stroke="#ffffff" stroke-width="2" stroke-linecap="round" opacity="0.8" />
+            <!-- Ice Cubes -->
+            <rect x="414" y="278" width="7" height="7" fill="#ffffff" opacity="0.8" rx="1"/>
+          </g>
+
+
+          <!-- ========================================================= -->
+          <!-- CENTER MEAL TRAY PLACEHOLDER / DYNAMIC ASSEMBLY AREA     -->
+          <!-- Center Bounds: X=100..380, Y=235..345 (Width=280, Height=110) -->
+          <!-- ========================================================= -->
+
+          <!-- 0. Dashed Placeholder Box (Shown initially) -->
+          <g id="tray-placeholder">
+            <rect x="110" y="240" width="260" height="100" rx="16" fill="#fff9ec" stroke="#8d5b28" stroke-width="2.5" stroke-dasharray="6,6" />
+            <text x="240" y="295" font-family="Jua" font-size="16" fill="#8d5b28" text-anchor="middle">여기에 내 식판이 놓여요 🍱</text>
+          </g>
+
+          <!-- 1. STAINLESS MEAL TRAY (Hidden initially, dropped in Step 1) -->
+          <g id="meal-tray-base" class="hidden">
+            <!-- Tray Outer Body with Double Rounded Edge -->
+            <rect x="105" y="235" width="270" height="110" rx="18" fill="#d1d5db" stroke="#22190a" stroke-width="3" />
+            <rect x="109" y="239" width="262" height="102" rx="14" fill="#e5e7eb" stroke="#9ca3af" stroke-width="1.5" />
+
+            <!-- 5 Stainless Compartments -->
+            <!-- TOP THREE SMALL SLOTS (Y: 245, Height: 38) -->
+            <!-- Top-Left Slot: Kimchi -->
+            <rect x="117" y="245" width="74" height="38" rx="8" fill="#f3f4f6" stroke="#22190a" stroke-width="2" />
+            <g id="food-kimchi">
+              <path d="M 125 258 Q 135 249 145 258 Q 155 267 170 255 Q 178 268 165 274 Q 145 277 127 270 Z" fill="#e8452c" stroke="#22190a" stroke-width="1" />
+              <circle cx="138" cy="262" r="2" fill="#ffd43b" />
+              <circle cx="152" cy="265" r="1.5" fill="#ffffff" />
+            </g>
+
+            <!-- Top-Middle Slot: Spinach Namul -->
+            <rect x="203" y="245" width="74" height="38" rx="8" fill="#f3f4f6" stroke="#22190a" stroke-width="2" />
+            <g id="food-spinach">
+              <circle cx="225" cy="263" r="11" fill="#2b9348" stroke="#22190a" stroke-width="1" />
+              <circle cx="242" cy="261" r="12" fill="#38b000" stroke="#22190a" stroke-width="1" />
+              <circle cx="256" cy="265" r="9" fill="#1b4332" stroke="#22190a" stroke-width="1" />
+              <circle cx="238" cy="264" r="1.5" fill="#ffd43b" />
+            </g>
+
+            <!-- Top-Right Slot: Main Tonkatsu Container Slot -->
+            <rect x="289" y="245" width="78" height="38" rx="8" fill="#f3f4f6" stroke="#22190a" stroke-width="2" />
+            
+            <!-- Question Mark before Step 2 -->
+            <g id="katsu-placeholder-q">
+              <text x="328" y="271" font-family="Jua" font-size="20" fill="#9ca3af" text-anchor="middle" font-weight="bold">?</text>
+            </g>
+
+
+            <!-- BOTTOM TWO LARGE SLOTS (Y: 291, Height: 46) -->
+            <!-- Bottom-Left Slot: Steamed Rice -->
+            <rect x="117" y="291" width="116" height="46" rx="10" fill="#f3f4f6" stroke="#22190a" stroke-width="2" />
+            <g id="food-rice">
+              <ellipse cx="175" cy="314" rx="50" ry="17" fill="#ffffff" stroke="#22190a" stroke-width="1.5" />
+              <ellipse cx="175" cy="311" rx="44" ry="13" fill="#fffdfa" />
+              <!-- Black sesame seeds -->
+              <circle cx="168" cy="310" r="1.2" fill="#22190a" />
+              <circle cx="175" cy="308" r="1.2" fill="#22190a" />
+              <circle cx="182" cy="312" r="1.2" fill="#22190a" />
+            </g>
+
+            <!-- Bottom-Right Slot: Doenjang Soup -->
+            <rect x="247" y="291" width="120" height="46" rx="10" fill="#f3f4f6" stroke="#22190a" stroke-width="2" />
+            <g id="food-soup">
+              <ellipse cx="307" cy="314" rx="52" ry="17" fill="#c97c36" stroke="#22190a" stroke-width="1.5" />
+              <!-- Tofu Cubes & Green Onion in Soup -->
+              <rect x="280" y="308" width="9" height="9" fill="#fffdfa" stroke="#22190a" stroke-width="1" />
+              <rect x="296" y="312" width="10" height="9" fill="#fffdfa" stroke="#22190a" stroke-width="1" />
+              <rect x="318" y="306" width="8" height="8" fill="#fffdfa" stroke="#22190a" stroke-width="1" />
+              <circle cx="290" cy="317" r="3" fill="#38b000" stroke="#22190a" stroke-width="0.8" />
+              <circle cx="330" cy="314" r="3" fill="#38b000" stroke="#22190a" stroke-width="0.8" />
+            </g>
+          </g>
+
+
+          <!-- 2. TONKATSU ITEM (Hidden initially, dropped in Step 2 into top-right slot) -->
+          <g id="food-tonkatsu-group" class="hidden">
+            <!-- Shredded Cabbage Side Salad -->
+            <path d="M 293 255 C 291 270 305 278 308 260 Z" fill="#74c69d" stroke="#22190a" stroke-width="1" />
+            <path d="M 295 250 C 298 262 308 270 312 255 Z" fill="#b7e4c7" stroke="#22190a" stroke-width="1" />
+            
+            <!-- Golden Sliced Tonkatsu Cutlet -->
+            <g id="katsu-cutlet">
+              <!-- Sliced pieces -->
+              <rect x="306" y="250" width="10" height="26" rx="3" fill="#e5a100" stroke="#22190a" stroke-width="1.5" />
+              <rect x="318" y="249" width="10" height="28" rx="3" fill="#f5b700" stroke="#22190a" stroke-width="1.5" />
+              <rect x="330" y="249" width="10" height="28" rx="3" fill="#e5a100" stroke="#22190a" stroke-width="1.5" />
+              <rect x="342" y="250" width="10" height="26" rx="3" fill="#f5b700" stroke="#22190a" stroke-width="1.5" />
+              <rect x="354" y="252" width="9" height="22" rx="3" fill="#e5a100" stroke="#22190a" stroke-width="1.5" />
+
+              <!-- Brown Sauce Zigzag Wire Overlay -->
+              <path d="M 306 260 Q 320 252 334 262 T 362 258" fill="none" stroke="#6f1d1b" stroke-width="3" stroke-linecap="round" />
+              <path d="M 310 266 Q 324 258 338 268 T 358 264" fill="none" stroke="#6f1d1b" stroke-width="2" stroke-linecap="round" />
+            </g>
+
+            <!-- Rising Steam Lines Above Tonkatsu -->
+            <path class="steam-line-1" d="M 320 245 Q 317 238 322 232" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" />
+            <path class="steam-line-2" d="M 345 245 Q 342 237 347 230" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" />
+
+            <!-- 4 Yellow Sparkles Celebration around dish -->
+            <path class="sparkle" d="M 284 240 L 286 244 L 290 245 L 286 247 L 284 251 L 282 247 L 278 245 L 282 244 Z" fill="#ffd43b" />
+            <path class="sparkle" style="animation-delay: 0.4s;" d="M 370 242 L 372 246 L 376 247 L 372 249 L 370 253 L 368 249 L 364 247 L 368 246 Z" fill="#ffd43b" />
+            <path class="sparkle" style="animation-delay: 0.8s;" d="M 290 280 L 292 283 L 295 284 L 292 285 L 290 288 L 288 285 L 285 284 L 288 283 Z" fill="#ffd43b" />
+            <path class="sparkle" style="animation-delay: 1.2s;" d="M 366 278 L 368 281 L 371 282 L 368 283 L 366 286 L 364 283 L 361 282 L 364 281 Z" fill="#ffd43b" />
+          </g>
+        </svg>
+      </div>
+
+      <!-- Status Banner Strip Below SVG -->
+      <div id="status-banner" class="w-full bg-[#22190a] text-white py-3 px-4 text-center font-jua text-base sm:text-lg flex items-center justify-center gap-2 border-t-2 border-[#22190a]">
+        <span>👋 어서 오세요! 식당 이용 인증 사진을 먼저 올려주세요!</span>
+      </div>
+    </div>
+
+
+    <!-- STEP 1 CARD -->
+    <div id="step1-card" class="w-full sticker-card p-5 flex flex-col items-center text-center">
+      <!-- Badge & Title -->
+      <div class="inline-flex items-center px-3 py-1 rounded-full bg-[#e8452c] text-white font-jua text-xs mb-2">
+        <span>1단계</span>
+      </div>
+      <h2 class="font-jua text-2xl text-[#22190a] mb-1">공식당 이용 인증</h2>
+      <p class="text-sm text-[#22190a]/80 mb-4 font-semibold">
+        오늘 공식당에서 먹은 식판/음식 사진을 올려주세요.
+      </p>
+
+      <!-- Upload Container -->
+      <div class="w-full">
+        <label id="step1-upload-label" class="w-full min-h-[48px] btn-pill-yellow cursor-pointer rounded-xl flex items-center justify-center gap-2 font-jua text-base p-3">
+          <svg class="w-5 h-5 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+            <circle cx="12" cy="13" r="3" />
+          </svg>
+          <span id="step1-btn-text">식판 사진 올리기</span>
+          <input type="file" id="step1-file" accept="image/*" class="hidden" onchange="handleStep1Upload(event)" />
+        </label>
+
+        <!-- Validation Error Message -->
+        <p id="step1-error" class="hidden text-red-600 font-bold text-xs mt-2 text-center">
+          이미지 파일만 올릴 수 있어요.
+        </p>
+
+        <!-- Preview & Done Badge Zone -->
+        <div id="step1-preview-container" class="hidden mt-4 flex flex-col items-center">
+          <div class="relative rounded-xl overflow-hidden border-2 border-[#22190a] max-h-48 w-full max-w-xs bg-slate-100 flex justify-center items-center">
+            <img id="step1-preview-img" src="" alt="식판 인증 사진" class="max-h-48 object-contain" />
+          </div>
+          <div class="mt-2 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 border border-emerald-500 text-emerald-800 font-bold text-xs">
+            <span>✓ 식판 받았어요!</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- STEP 2 CARD -->
+    <div id="step2-card" class="w-full sticker-card p-5 flex flex-col items-center text-center opacity-50 pointer-events-none transition-all duration-300">
+      <!-- Badge & Title -->
+      <div class="inline-flex items-center px-3 py-1 rounded-full bg-[#22190a] text-white font-jua text-xs mb-2">
+        <span>2단계</span>
+      </div>
+      <h2 class="font-jua text-2xl text-[#22190a] mb-1">구글 제미나이 plus/pro인증</h2>
+      
+      <!-- Exact 2-line break Subtitle -->
+      <p class="text-sm text-[#22190a]/80 mb-4 font-semibold leading-relaxed">
+        구글 제미나이 Plus 또는 Pro 인증 화면 캡처를<br>
+        올려주세요.
+      </p>
+
+      <!-- Upload Container -->
+      <div class="w-full">
+        <label id="step2-upload-label" class="w-full min-h-[48px] btn-pill-yellow cursor-pointer rounded-xl flex items-center justify-center gap-2 font-jua text-base p-3">
+          <svg class="w-5 h-5 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+          <span id="step2-btn-text">제미나이 캡처 사진 올리기</span>
+          <input type="file" id="step2-file" accept="image/*" class="hidden" onchange="handleStep2Upload(event)" />
+        </label>
+
+        <!-- Validation Error Message -->
+        <p id="step2-error" class="hidden text-red-600 font-bold text-xs mt-2 text-center">
+          이미지 파일만 올릴 수 있어요.
+        </p>
+
+        <!-- Preview & Done Badge Zone -->
+        <div id="step2-preview-container" class="hidden mt-4 flex flex-col items-center">
+          <div class="relative rounded-xl overflow-hidden border-2 border-[#22190a] max-h-48 w-full max-w-xs bg-slate-100 flex justify-center items-center">
+            <img id="step2-preview-img" src="" alt="제미나이 인증 캡처" class="max-h-48 object-contain" />
+          </div>
+          <div class="mt-2 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 border border-emerald-500 text-emerald-800 font-bold text-xs">
+            <span>✓ 가입 인증 완료!</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- COMPLETION CARD (Hidden until Step 2 finishes) -->
+    <div id="completion-card" class="hidden w-full sticker-card p-6 flex flex-col items-center text-center bg-gradient-to-b from-white to-amber-50">
+      <!-- Party Icon -->
+      <div class="text-4xl mb-2">🎉</div>
+      
+      <!-- Title (2 lines) -->
+      <h2 class="font-jua text-3xl text-[#22190a] leading-tight mb-2">
+        이벤트 참여가<br>
+        <span class="text-[#e8452c]">완료되었습니다! 🎉</span>
+      </h2>
+
+      <!-- Exact requested body text -->
+      <p class="text-sm sm:text-base font-semibold text-[#22190a]/85 leading-relaxed mb-6">
+        공식당 인스타그램도 구경해 보고,<br>
+        아래 구글폼까지 제출하면 진짜 끝이에요.
+      </p>
+
+      <!-- Action Buttons Stack -->
+      <div class="w-full flex flex-col gap-3.5">
+        <!-- Button 1: Instagram Link (Tomato Red) -->
+        <a id="btn-instagram" href="#" target="_blank" rel="noopener noreferrer" class="w-full min-h-[48px] btn-pill-red font-jua text-lg py-3 px-4 rounded-xl flex items-center justify-center gap-2 text-white no-underline">
+          <span>📸 공식당 인스타 보러가기</span>
+        </a>
+
+        <!-- Button 2: Google Form Link (Green) -->
+        <a id="btn-google-form" href="#" target="_blank" rel="noopener noreferrer" class="w-full min-h-[48px] btn-pill-green font-jua text-lg py-3 px-4 rounded-xl flex items-center justify-center gap-2 text-white no-underline">
+          <span>📝 이벤트 참여 인증 구글폼 제출하기</span>
+        </a>
+
+        <!-- Button 3: Reset / Restart -->
+        <button onclick="handleReset()" class="w-full min-h-[48px] btn-pill-light font-jua text-base py-3 px-4 rounded-xl flex items-center justify-center gap-2 text-[#22190a] mt-1">
+          <span>🔄 처음부터 다시 하기</span>
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+
+  <!-- ========================================== -->
+  <!-- JAVASCRIPT LOGIC                           -->
+  <!-- ========================================== -->
+  <script>
+    // Configuration links at the very top of script
+    const CONFIG = {
+      instagramUrl: "https://www.instagram.com/gongstaurant?evlk=dHJncWMwaGJvNHB1",
+      googleFormUrl: "https://docs.google.com/forms/d/e/1FAIpQLSfd249cX-Fnfh6SDyQaeWT8o8b3WkAVxcYpyIS-x31YB7AQZg/viewform?usp=sharing&ouid=116231737955512741469"
+    };
+
+    // State flags & Object URLs for clean memory disposal
+    let step1BlobUrl = null;
+    let step2BlobUrl = null;
+    let isStep1Done = false;
+    let isStep2Done = false;
+
+    // Initialize link targets on DOM Ready
+    document.addEventListener("DOMContentLoaded", function() {
+      const instaBtn = document.getElementById("btn-instagram");
+      const formBtn = document.getElementById("btn-google-form");
+
+      if (instaBtn) instaBtn.href = CONFIG.instagramUrl;
+      if (formBtn) formBtn.href = CONFIG.googleFormUrl;
+    });
+
+    /**
+     * Screen 1 -> Screen 2 Door Opening Transition Handler
+     */
+    function handleStart() {
+      const btnStart = document.getElementById("btn-start");
+      const leftDoor = document.getElementById("left-door");
+      const rightDoor = document.getElementById("right-door");
+      const doorBell = document.getElementById("door-bell");
+      const doorWrapper = document.getElementById("door-wrapper");
+      const flashOverlay = document.getElementById("flash-overlay");
+      const introScreen = document.getElementById("intro-screen");
+      const mainScreen = document.getElementById("main-screen");
+
+      // 1. Fade out start button
+      btnStart.style.opacity = "0";
+      btnStart.style.pointerEvents = "none";
+
+      // 2. Shake door bell
+      doorBell.classList.add("ring-bell");
+
+      // 3. Open left and right glass doors outward
+      leftDoor.classList.add("door-left-open");
+      rightDoor.classList.add("door-right-open");
+
+      // 4. Zoom into doorway with scale
+      setTimeout(() => {
+        doorWrapper.style.transform = "scale(1.4)";
+        flashOverlay.style.opacity = "0.7";
+      }, 400);
+
+      // 5. Hide intro screen, show main relay screen
+      setTimeout(() => {
+        introScreen.classList.add("hidden");
+        mainScreen.classList.remove("hidden");
+        mainScreen.classList.add("flex");
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }, 800);
+    }
+
+    /**
+     * Step 1: Upload Meal Tray Image Validation & Assembly Action
+     */
+    function handleStep1Upload(event) {
+      const file = event.target.files[0];
+      const errorEl = document.getElementById("step1-error");
+      
+      if (!file) return;
+
+      // Validate image type only
+      if (!file.type.startsWith("image/")) {
+        errorEl.classList.remove("hidden");
+        return;
+      }
+      errorEl.classList.add("hidden");
+
+      // Generate local preview URL
+      if (step1BlobUrl) URL.revokeObjectURL(step1BlobUrl);
+      step1BlobUrl = URL.createObjectURL(file);
+
+      // Show preview element
+      const previewImg = document.getElementById("step1-preview-img");
+      const previewContainer = document.getElementById("step1-preview-container");
+      previewImg.src = step1BlobUrl;
+      previewContainer.classList.remove("hidden");
+
+      // Update button text
+      document.getElementById("step1-btn-text").textContent = "식판 사진 변경하기";
+
+      // Trigger Tray Drop SVG Assembly if not already done
+      if (!isStep1Done) {
+        isStep1Done = true;
+
+        // Hide dashed placeholder & reveal stainless meal tray base
+        const placeholder = document.getElementById("tray-placeholder");
+        const mealTrayBase = document.getElementById("meal-tray-base");
+
+        placeholder.classList.add("hidden");
+        mealTrayBase.classList.remove("hidden");
+        mealTrayBase.classList.add("anim-tray-drop");
+
+        // Update status banner strip text
+        const statusBanner = document.getElementById("status-banner");
+        statusBanner.innerHTML = "<span>식판 등장! 이제 가입 인증을 올려주세요 🍱</span>";
+
+        // Enable Step 2 Card
+        const step2Card = document.getElementById("step2-card");
+        step2Card.classList.remove("opacity-50", "pointer-events-none");
+      }
+    }
+
+    /**
+     * Step 2: Upload Gemini Captures & Drop Tonkatsu Assembly Action
+     */
+    function handleStep2Upload(event) {
+      const file = event.target.files[0];
+      const errorEl = document.getElementById("step2-error");
+      
+      if (!file) return;
+
+      // Validate image type only
+      if (!file.type.startsWith("image/")) {
+        errorEl.classList.remove("hidden");
+        return;
+      }
+      errorEl.classList.add("hidden");
+
+      // Generate local preview URL
+      if (step2BlobUrl) URL.revokeObjectURL(step2BlobUrl);
+      step2BlobUrl = URL.createObjectURL(file);
+
+      // Show preview element
+      const previewImg = document.getElementById("step2-preview-img");
+      const previewContainer = document.getElementById("step2-preview-container");
+      previewImg.src = step2BlobUrl;
+      previewContainer.classList.remove("hidden");
+
+      // Update button text
+      document.getElementById("step2-btn-text").textContent = "캡처 사진 변경하기";
+
+      // Trigger Tonkatsu Drop Assembly if not already done
+      if (!isStep2Done) {
+        isStep2Done = true;
+
+        // Hide question mark placeholder in tray slot
+        const qPlaceholder = document.getElementById("katsu-placeholder-q");
+        const tonkatsuGroup = document.getElementById("food-tonkatsu-group");
+
+        if (qPlaceholder) qPlaceholder.classList.add("hidden");
+        tonkatsuGroup.classList.remove("hidden");
+        tonkatsuGroup.classList.add("anim-katsu-drop");
+
+        // Update status banner text
+        const statusBanner = document.getElementById("status-banner");
+        statusBanner.innerHTML = "<span>바삭한 돈까스 완성! 🎉</span>";
+
+        // Reveal Completion Card & Scroll Smoothly
+        const completionCard = document.getElementById("completion-card");
+        completionCard.classList.remove("hidden");
+        
+        setTimeout(() => {
+          completionCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 300);
+      }
+    }
+
+    /**
+     * Reset Event State and Return to Intro Door Screen
+     */
+    function handleReset() {
+      // 1. Reset file inputs
+      const step1Input = document.getElementById("step1-file");
+      const step2Input = document.getElementById("step2-file");
+      step1Input.value = "";
+      step2Input.value = "";
+
+      // 2. Revoke Blob URLs
+      if (step1BlobUrl) URL.revokeObjectURL(step1BlobUrl);
+      if (step2BlobUrl) URL.revokeObjectURL(step2BlobUrl);
+      step1BlobUrl = null;
+      step2BlobUrl = null;
+
+      // 3. Reset preview zones
+      document.getElementById("step1-preview-container").classList.add("hidden");
+      document.getElementById("step2-preview-container").classList.add("hidden");
+      document.getElementById("step1-preview-img").src = "";
+      document.getElementById("step2-preview-img").src = "";
+      document.getElementById("step1-btn-text").textContent = "식판 사진 올리기";
+      document.getElementById("step2-btn-text").textContent = "제미나이 캡처 사진 올리기";
+
+      // 4. Reset errors
+      document.getElementById("step1-error").classList.add("hidden");
+      document.getElementById("step2-error").classList.add("hidden");
+
+      // 5. Reset SVG meal tray graphics state
+      document.getElementById("tray-placeholder").classList.remove("hidden");
+      
+      const mealTrayBase = document.getElementById("meal-tray-base");
+      mealTrayBase.classList.add("hidden");
+      mealTrayBase.classList.remove("anim-tray-drop");
+
+      const qPlaceholder = document.getElementById("katsu-placeholder-q");
+      if (qPlaceholder) qPlaceholder.classList.remove("hidden");
+
+      const tonkatsuGroup = document.getElementById("food-tonkatsu-group");
+      tonkatsuGroup.classList.add("hidden");
+      tonkatsuGroup.classList.remove("anim-katsu-drop");
+
+      // 6. Reset status banner
+      const statusBanner = document.getElementById("status-banner");
+      statusBanner.innerHTML = "<span>👋 어서 오세요! 식당 이용 인증 사진을 먼저 올려주세요!</span>";
+
+      // 7. Reset Step 2 card & Completion Card
+      const step2Card = document.getElementById("step2-card");
+      step2Card.classList.add("opacity-50", "pointer-events-none");
+
+      const completionCard = document.getElementById("completion-card");
+      completionCard.classList.add("hidden");
+
+      // Reset state flags
+      isStep1Done = false;
+      isStep2Done = false;
+
+      // 8. Reset Entrance Doors & switch screens back to intro
+      const leftDoor = document.getElementById("left-door");
+      const rightDoor = document.getElementById("right-door");
+      const doorWrapper = document.getElementById("door-wrapper");
+      const flashOverlay = document.getElementById("flash-overlay");
+      const btnStart = document.getElementById("btn-start");
+      const doorBell = document.getElementById("door-bell");
+
+      leftDoor.classList.remove("door-left-open");
+      rightDoor.classList.remove("door-right-open");
+      doorBell.classList.remove("ring-bell");
+      doorWrapper.style.transform = "scale(1)";
+      flashOverlay.style.opacity = "0";
+
+      btnStart.style.opacity = "1";
+      btnStart.style.pointerEvents = "auto";
+
+      document.getElementById("main-screen").classList.add("hidden");
+      document.getElementById("main-screen").classList.remove("flex");
+      document.getElementById("intro-screen").classList.remove("hidden");
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>

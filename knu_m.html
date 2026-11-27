@@ -1,0 +1,2549 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>미술관 ON 김에, 미션!: 작품 찾기</title>
+  <meta name="description" content="작품 촬영과 제미나이 가입 인증, 두 가지 미션을 완료하면 경품 추첨에 응모됩니다." />
+  <meta property="og:title" content="미술관 ON 김에, 미션!: 작품 찾기" />
+  <meta property="og:description" content="작품 촬영과 제미나이 가입 인증, 두 가지 미션을 완료하면 경품 추첨에 응모됩니다." />
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Pretendard Font -->
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            knu: {
+              red: '#02FF02',
+              darkRed: '#00DC00',
+              coral: '#85FF85',
+              soft: '#F6F9F0',
+              bg: '#FAFAF7',
+              slate: '#1F2937'
+            }
+          },
+          fontFamily: {
+            sans: ['Pretendard', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'Roboto', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #FAFAF7;
+      color: #1F2937;
+      font-family: 'Pretendard', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* 3D Card Flip Utilities */
+    .perspective-1000 {
+      perspective: 1000px;
+    }
+    .transform-style-3d {
+      transform-style: preserve-3d;
+      transition: transform 0.75s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .backface-hidden {
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+    .rotate-y-180 {
+      transform: rotateY(180deg);
+    }
+
+    /* Shimmer & Floating Effects */
+    @keyframes floatSlow {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-6px); }
+    }
+    .animate-float {
+      animation: floatSlow 3.2s ease-in-out infinite;
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(156, 199, 87, 0.4); }
+      50% { box-shadow: 0 0 0 12px rgba(156, 199, 87, 0); }
+    }
+    .pulse-knu {
+      animation: pulseGlow 2s infinite;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #DFF4B9;
+      border-radius: 9999px;
+    }
+
+    .event-intro-title {
+      font-size: clamp(16px, 4.4vw, 20px);
+      line-height: 1.65;
+      letter-spacing: -0.025em;
+      word-break: keep-all;
+      overflow-wrap: break-word;
+      text-wrap: balance;
+    }
+    .event-exhibition-line { font-size: clamp(14px, 4.3vw, 19px); white-space: nowrap; letter-spacing: -0.04em; }
+    .exhibition-name { display: inline-block; white-space: nowrap; }
+    .exhibition-english { display: inline-block; font-size: 0.78em; letter-spacing: -0.035em; }
+    .event-prize-title { font-size: clamp(14px, 3.8vw, 17px); line-height: 1.65; letter-spacing: -0.025em; word-break: keep-all; }
+    .event-prize-title > span { display: block; }
+    .event-prize-title strong { color: #B7ED58; white-space: nowrap; }
+    .event-intro-detail { word-break: keep-all; text-wrap: pretty; }
+    @media (max-width: 480px) {
+      #viewLogin { padding: 22px 18px; }
+      #viewLogin > div:first-child { padding: 20px 12px; }
+      header .max-w-5xl { gap: 8px; }
+      header .max-w-5xl > div:first-child { min-width: 0; gap: 6px; flex: 1; }
+      header h1 { font-size: 11px; line-height: 1.5; }
+      header .uppercase { font-size: 9px; letter-spacing: 0; }
+      #adminToggleBtn { padding: 7px 8px; font-size: 10px; flex-shrink: 0; }
+      #adminToggleBtn svg { display: none; }
+    }
+
+    /* Neon green accents with readable dark text on bright surfaces. */
+    .text-knu-red { color: #176B16 !important; }
+    .bg-knu-red { color: #10230B !important; }
+    #eventTopBanner, #eventTopBanner h2, #eventTopBanner span { color: #10230B; }
+    #eventTopBanner .bg-black\/20 { background-color: rgba(255,255,255,.42); }
+    header .from-knu-red { color: #10230B; }
+    .event-prize-title strong { color: #176B16; }
+    #cardFrontFace { background: linear-gradient(145deg, #142714, #111811 65%, #080C08); border-color: #B7ED58; }
+    #cardFrontFace .text-knu-red { color: #176B16 !important; }
+    #cardFrontFace .text-knu-coral { color: #DFF4B9; }
+    #submitFinalBtn.from-knu-red { color: #10230B; }
+    ::selection { background: #B7ED58; color: #10230B; }
+
+    /* Soft lime gradient with restrained, high-contrast accents. */
+    #eventTopBanner {
+      background: linear-gradient(120deg, #F4FFF4 0%, #C0FFC0 38%, #58FF58 72%, #02FF02 100%);
+      border-bottom: 1px solid rgba(73, 97, 43, .10);
+    }
+    #eventTopBanner > .blur-xl { display: none; }
+    #eventTopBanner, #eventTopBanner h2, #eventTopBanner span { color: #233322; }
+    #eventTopBanner .bg-black\/20 {
+      background: rgba(255, 255, 255, .58);
+      border: 1px solid rgba(61, 83, 39, .10);
+    }
+    .bg-knu-red {
+      background-image: linear-gradient(115deg, #C2FFC2, #62FF62 48%, #02FF02);
+      color: #233322 !important;
+    }
+    .bg-knu-red:hover { background-image: linear-gradient(115deg, #9AFF9A, #02FF02); }
+    .text-knu-red { color: #176B16 !important; }
+    .event-prize-title strong { color: #176B16; }
+    #viewLogin > div:first-child {
+      background: linear-gradient(145deg, #FFFFFF 0%, #F0FFF0 100%);
+      border-color: #DCF3DC;
+    }
+    header .from-knu-red { background: linear-gradient(135deg, #C2FFC2, #02FF02); color: #233322; }
+    #startEventBtn { box-shadow: 0 6px 18px rgba(2, 255, 2, .12); animation: none; }
+    #participantContainer { box-shadow: 0 15px 45px rgba(42, 54, 33, .07); }
+    #cardFrontFace { background: linear-gradient(145deg, #2D3C2A, #17221A 70%); border-color: #02FF02; }
+
+    #geminiBenefitCard {
+      background: radial-gradient(ellipse at 100% 0%, rgba(2,255,2,.10), transparent 56%), linear-gradient(135deg, #282828 0%, #121212 48%, #030303 100%);
+      border: 1px solid #394139;
+      box-shadow: 0 12px 28px rgba(0,0,0,.17);
+    }
+    #geminiBenefitCard .benefit-glow { background: rgba(2,255,2,.12); }
+    #geminiBenefitCard .text-blue-300 { color: #02FF02; }
+    #geminiBenefitCard .text-blue-100 { color: #D7DDD7; }
+    #geminiBenefitCard .bg-knu-red { background: rgba(2,255,2,.12); color: #02FF02 !important; border: 1px solid rgba(2,255,2,.3); }
+    #geminiBenefitCard .benefit-prize {
+      margin-top: 22px; padding-top: 18px; border-top: 1px solid rgba(2,255,2,.23);
+      display: flex; flex-direction: column; align-items: flex-start; gap: 2px;
+      font-size: clamp(18px, 5vw, 22px); line-height: 1.45; font-weight: 800; letter-spacing: -.025em;
+    }
+    #geminiBenefitCard .benefit-prize strong { color: #02FF02; font-size: clamp(34px, 10vw, 42px); font-weight: 900; line-height: 1.2; }
+    #geminiReferralLinkBtn { background: linear-gradient(115deg, #B6FFB6, #02FF02); color: #102310; box-shadow: 0 5px 16px rgba(2,255,2,.12); }
+    #geminiReferralLinkBtn:hover { background: #02EF02; }
+
+    /* Mobile mission layout: let copy wrap without shrinking beside controls. */
+    #viewMission, #tabContent1, #tabContent2 { min-width: 0; }
+    #viewMission *, #viewMission *::before, #viewMission *::after { box-sizing: border-box; }
+    #viewMission h3, #viewMission h4, #viewMission p, #viewMission label,
+    #viewMission button span, #geminiReferralLinkBtn span {
+      word-break: keep-all; overflow-wrap: anywhere; line-height: 1.6;
+    }
+    #viewMission svg { flex-shrink: 0; }
+    #viewMission .flex > div, #viewMission .flex > span { min-width: 0; }
+    #displayCurrentUser { overflow-wrap: anywhere; word-break: break-word; }
+    #assignedArtHint, #assignedArtTitle { overflow-wrap: anywhere; word-break: keep-all; }
+    @media (max-width: 640px) {
+      #tabContent1, #tabContent2 { padding: 20px 16px; }
+      #tabContent1 > div:first-child { flex-direction: column; align-items: stretch; gap: 10px; }
+      #tabContent1 > div:first-child > div { width: 100%; }
+      #tabContent1 h3, #tabContent2 h3 { font-size: 16px; line-height: 1.65; letter-spacing: -.025em; text-align: left; }
+      #redrawBtn { align-self: flex-end; flex-shrink: 0; white-space: nowrap; min-height: 36px; }
+      #tabBtn1, #tabBtn2 { min-width: 0; padding: 10px 6px; gap: 4px; font-size: 11px; line-height: 1.5; }
+      #tab1Check, #tab2Check { flex-shrink: 0; }
+      #viewMission > div:first-child { padding: 14px 16px; }
+      #viewMission > div:first-child > div:first-child { align-items: flex-start; gap: 12px; }
+      #viewMission > div:first-child button { flex-shrink: 0; white-space: nowrap; }
+      #viewMission > div:first-child > div:last-child { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 10px; line-height: 1.6; }
+      #statusStep1, #statusStep2 { align-items: flex-start; }
+      #statusStep1 svg, #statusStep2 svg { margin-top: 2px; }
+      #cardFrontFace { padding: 24px 16px; }
+      #cardFrontFace h4 { font-size: 18px; text-wrap: balance; }
+      #cardFrontFace > span { font-size: 10px; letter-spacing: .06em; }
+      #cardBackFace > div:first-child { flex-wrap: wrap; gap: 6px 12px; padding: 10px 12px; }
+      #assignedArtNumber { white-space: nowrap; }
+      #assignedArtZone { flex-wrap: wrap; }
+      #cardBackFace > div:last-child { padding: 14px 12px; }
+      #assignedArtTitle { font-size: 16px; }
+      #assignedArtHint { font-size: 12px; line-height: 1.65; }
+      #assignedArtPhotoModeBadge { max-width: calc(100% - 20px); line-height: 1.5; }
+      #tabContent1 > .flex, #tabContent2 > .flex { gap: 10px; }
+      #tabContent1 > .flex > div:last-child, #tabContent2 > .flex > div:last-child { flex: 1; min-width: 0; }
+      #uploadBoxArt, #uploadBoxGemini { padding: 20px 12px; }
+      #artUploadEmpty > div.text-sm, #geminiUploadEmpty > div.text-sm { font-size: 13px; line-height: 1.65; word-break: keep-all; }
+      #artUploadEmpty p, #geminiUploadEmpty p { font-size: 11px; line-height: 1.65; }
+      #geminiBenefitCard { padding: 20px 16px; }
+      #geminiBenefitCard > .flex { flex-wrap: wrap; justify-content: flex-start; gap: 8px 12px; }
+      #geminiBenefitCard > .flex > div { flex: 1 1 145px; }
+      #geminiBenefitCard > .flex > span { flex-shrink: 0; white-space: nowrap; }
+      #geminiBenefitCard h4 { font-size: 15px; }
+      #geminiBenefitCard p { font-size: 13px; line-height: 1.9; }
+      #geminiBenefitCard p strong { display: inline-block; }
+      #geminiBenefitCard .benefit-prize { align-items: flex-start; }
+      #geminiBenefitCard .benefit-prize strong { line-height: 1.2; }
+      #geminiReferralLinkBtn { font-size: 14px; padding: 14px 12px; }
+      #finalSubmitBtn { padding: 14px 12px; font-size: 13px; gap: 8px; }
+      #submitBtnText { flex: 1; text-align: center; line-height: 1.65; }
+    }
+
+    #artMissionSummaryTitle { white-space: nowrap; }
+    @media (max-width: 480px) {
+      #missionSummaryPills { grid-template-columns: 1fr; }
+      #missionSummaryPills > div > div:last-child { min-width: 0; }
+      #geminiSummaryDetail { white-space: nowrap; font-size: 10px; letter-spacing: -.02em; }
+      #missionSummaryPills > div { padding: 10px 6px; gap: 4px; min-width: 0; }
+      #missionSummaryPills > div > div:first-child { width: 22px; height: 24px; }
+      #artMissionSummaryTitle { font-size: 10px; letter-spacing: -.025em; }
+    }
+    @media (max-width: 359px) {
+      #missionSummaryPills { grid-template-columns: 1fr; }
+      #missionSummaryPills > div { padding: 10px; gap: 8px; }
+      #artMissionSummaryTitle { font-size: 11px; }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-knu-red selection:text-white">
+
+  <!-- Top Navigation Bar -->
+  <header class="sticky top-0 z-40 backdrop-blur-md bg-white/85 border-b border-stone-200/80 px-4 py-3">
+    <div class="max-w-5xl mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-2.5 cursor-pointer" onclick="window.app.goHome()">
+        <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-knu-red to-knu-coral flex items-center justify-center shadow-sm shrink-0 overflow-hidden">
+          <img src="/assets/gsa-knu-logo.png" alt="GSA 경북대학교 Team Gemini 로고" class="w-full h-full object-contain p-0.5" onerror="this.style.display='none'" />
+        </div>
+        <div>
+          <span class="text-xs font-bold tracking-wider text-knu-red uppercase block leading-none">GSA_KNU X ARTMUSEUM_KNU</span>
+          <h1 class="text-sm font-extrabold text-stone-800">경북대학교미술관 랜덤 카드 미션</h1>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <!-- Cloud Status Pill -->
+        <div id="cloudStatusBadge" class="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-stone-100 text-stone-600 text-xs font-medium">
+          <span id="cloudStatusDot" class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+          <span id="cloudStatusText">아카이브 연결 중</span>
+        </div>
+
+        <!-- Organizer Archive & Config Toggle Button -->
+        <button onclick="window.app.toggleAdminMode()" id="adminToggleBtn" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold transition shadow-sm">
+          <i data-lucide="database" class="w-3.5 h-3.5 text-knu-coral"></i>
+          <span id="adminToggleText">아카이브 / 운영진 관리</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <main class="flex-1 w-full max-w-5xl mx-auto px-3 sm:px-6 py-5 flex flex-col items-center justify-center">
+
+    <!-- QUICK 1-CLICK ORIGINAL PHOTOS LOADER BANNER -->
+    <div id="quickRealPhotoBanner" class="hidden w-full max-w-[460px] mb-4 bg-gradient-to-r from-amber-500/15 via-knu-soft to-white border-2 border-knu-red/40 rounded-2xl p-3.5 shadow-sm flex items-center justify-between gap-3">
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl bg-knu-red text-white flex items-center justify-center shrink-0 shadow-xs">
+          <i data-lucide="images" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <div class="text-xs font-black text-stone-900 flex items-center gap-1">
+            <span>운영진 전용: 원본 작품 사진 15장 바로 적용</span>
+          </div>
+          <p class="text-[11px] text-stone-600 leading-tight mt-0.5">
+            가지고 계신 15장 원본 파일(.jpg)을 한 번에 선택하면 카드 속 사진이 즉시 실물 원본으로 바뀝니다!
+          </p>
+        </div>
+      </div>
+      <label class="cursor-pointer shrink-0 px-3 py-2 rounded-xl bg-knu-red hover:bg-knu-darkRed text-white font-extrabold text-xs shadow-sm transition flex items-center gap-1">
+        <i data-lucide="upload" class="w-3.5 h-3.5"></i>
+        <span>15장 선택</span>
+        <input
+          type="file"
+          accept="image/*"
+          multiple
+          class="hidden"
+          onchange="window.app.handleBulkArtworkUpload(event)"
+        />
+      </label>
+    </div>
+
+    <!-- ==========================================
+         PARTICIPANT MOBILE-FIRST APP CONTAINER
+         ========================================== -->
+    <div id="participantContainer" class="w-full max-w-[460px] bg-white rounded-3xl shadow-xl shadow-stone-200/70 border border-stone-200/90 overflow-hidden transition-all duration-300">
+
+      <!-- Top Banner Ribbon -->
+      <div id="eventTopBanner" class="bg-gradient-to-r from-knu-red via-[#CFECA4] to-knu-coral px-3 sm:px-5 py-4 text-white relative overflow-hidden">
+        <div class="absolute -right-6 -bottom-8 w-28 h-28 rounded-full bg-white/10 blur-xl pointer-events-none"></div>
+        <div class="flex items-center justify-between">
+          <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-black/20 text-white backdrop-blur-xs">
+            <i data-lucide="sparkles" class="w-3 h-3"></i> SPECIAL EVENT
+          </span>
+          <span id="headerUserBadge" class="hidden text-xs bg-white/20 px-2.5 py-0.5 rounded-full font-semibold backdrop-blur-xs"></span>
+        </div>
+        <h2 class="event-intro-title mt-3 font-extrabold">
+          랜덤 카드 속<br/><span class="event-exhibition-line"><span class="exhibition-name">표준 사용법 <span class="exhibition-english">(How to be &quot;Normal&quot;)</span></span>의 작품을 찾고,</span><br/>제미나이 학생 혜택에 가입해 보세요!
+        </h2>
+      </div>
+
+      <!-- VIEW 1: LANDING & LOGIN SCREEN -->
+      <section id="viewLogin" class="p-6 space-y-6">
+        <!-- Visual Intro Card Stack -->
+        <div class="relative bg-knu-soft/70 border border-knu-coral/30 rounded-2xl p-5 text-center overflow-hidden">
+          <img src="/assets/how-to-be-normal-poster.png" alt="경북대학교미술관 표준 사용법 How to be Normal 전시 포스터" class="mx-auto w-28 sm:w-32 h-auto rounded-lg shadow-lg animate-float border border-stone-200" width="340" height="460" onerror="this.style.display='none'" />
+          <h3 class="event-prize-title mt-4 font-extrabold text-stone-800"><span>작품 찾기 미션 완료하고</span><span>전시 작품 엽서를 받아가세요!</span></h3>
+          <p class="event-intro-detail mt-3 text-xs text-stone-600 leading-relaxed">
+            작품 사진을 제출하면 로비에서 작품 엽서를 받을 수 있어요.<br/>제미나이 가입 인증 후 10,000원 상품권 추첨에도 응모해 보세요!
+          </p>
+
+          <!-- Step Summary Pills -->
+          <div id="missionSummaryPills" class="mt-4 grid grid-cols-2 gap-2 text-left">
+            <div class="bg-white p-2.5 rounded-xl border border-stone-200/80 flex items-center gap-2">
+              <div class="w-7 h-7 rounded-lg bg-knu-red/10 text-knu-red flex items-center justify-center font-black text-xs shrink-0">1</div>
+              <div>
+                <div id="artMissionSummaryTitle" class="text-[11px] font-bold text-stone-800">미술관 15종 랜덤카드</div>
+                <div class="text-[10px] text-stone-500">사진 제출 후 작품 엽서 받기</div>
+              </div>
+            </div>
+            <div class="bg-white p-2.5 rounded-xl border border-stone-200/80 flex items-center gap-2">
+              <div class="w-7 h-7 rounded-lg bg-blue-500/10 text-blue-600 flex items-center justify-center font-black text-xs shrink-0">2</div>
+              <div>
+                <div class="text-[11px] font-bold text-stone-800">제미나이 혜택 가입</div>
+                <div id="geminiSummaryDetail" class="text-[10px] text-stone-500">가입 인증 후 상품권 추첨 응모</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Participant ID & Contact Form -->
+        <form id="loginForm" onsubmit="window.app.handleStartEvent(event)" class="space-y-4">
+          <div>
+            <label class="block text-xs font-bold text-stone-700 mb-1.5">
+              참가자 아이디 <span class="text-knu-red">*</span>
+              <span class="font-normal text-stone-400 ml-1">(성함 또는 닉네임)</span>
+            </label>
+            <div class="relative">
+              <i data-lucide="user-check" class="w-4 h-4 text-stone-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+              <input
+                type="text"
+                id="inputUserId"
+                required
+                placeholder="예: 김경북 또는 GSA"
+                class="w-full pl-10 pr-4 py-3 rounded-xl bg-stone-50 border border-stone-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-knu-red focus:bg-white transition"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-stone-700 mb-1.5">
+              당첨 안내 연락처 <span class="text-knu-red">*</span>
+              <span class="font-normal text-stone-400 ml-1">(전화번호 또는 이메일)</span>
+            </label>
+            <div class="relative">
+              <i data-lucide="phone" class="w-4 h-4 text-stone-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+              <input
+                type="text"
+                id="inputUserContact"
+                required
+                placeholder="예: 010-1234-5678"
+                class="w-full pl-10 pr-4 py-3 rounded-xl bg-stone-50 border border-stone-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-knu-red focus:bg-white transition"
+              />
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            id="startEventBtn"
+            class="w-full py-3.5 px-6 rounded-2xl bg-knu-red hover:bg-knu-darkRed active:scale-[0.99] text-white font-extrabold text-base shadow-lg shadow-knu-red/25 flex items-center justify-center gap-2 transition pulse-knu"
+          >
+            <span>이벤트 참여하기</span>
+            <i data-lucide="arrow-right" class="w-5 h-5"></i>
+          </button>
+        </form>
+      </section>
+
+      <!-- VIEW 2: MISSION WORKSPACE (TABS 1 & 2) -->
+      <section id="viewMission" class="hidden">
+        <!-- User Status Bar & Progress Tracker -->
+        <div class="bg-stone-50 px-5 py-3.5 border-b border-stone-200/80">
+          <div class="flex items-center justify-between text-xs mb-2">
+            <div class="flex items-center gap-1.5 font-bold text-stone-700">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+              <span id="displayCurrentUser">참가자님</span>
+            </div>
+            <button onclick="window.app.logoutUser()" class="text-stone-400 hover:text-stone-700 underline text-[11px]">
+              아이디 변경
+            </button>
+          </div>
+
+          <!-- Progress Bar -->
+          <div class="w-full bg-stone-200 h-2 rounded-full overflow-hidden">
+            <div id="missionProgressBar" class="bg-gradient-to-r from-knu-red to-emerald-500 h-full transition-all duration-500" style="width: 10%"></div>
+          </div>
+          <div class="flex justify-between text-[11px] font-semibold text-stone-500 mt-1.5">
+            <span id="statusStep1" class="flex items-center gap-1">
+              <i data-lucide="circle-dashed" class="w-3.5 h-3.5"></i> 작품 찾기: 미술관 작품 촬영
+            </span>
+            <span id="statusStep2" class="flex items-center gap-1">
+              <i data-lucide="circle-dashed" class="w-3.5 h-3.5"></i> 추가 응모: 제미나이 가입 캡처
+            </span>
+          </div>
+        </div>
+
+        <!-- Mission Tab Switcher -->
+        <div class="grid grid-cols-2 border-b border-stone-200 bg-white">
+          <button
+            id="tabBtn1"
+            onclick="window.app.switchMissionTab(1)"
+            class="py-3 px-3 text-xs font-extrabold border-b-2 border-knu-red text-stone-900 flex items-center justify-center gap-1.5 transition"
+          >
+            <span>1. 작품 찾기</span>
+            <span id="tab1Check" class="text-emerald-600 font-black"></span>
+          </button>
+          <button
+            id="tabBtn2"
+            onclick="window.app.switchMissionTab(2)"
+            class="py-3 px-3 text-xs font-bold border-b-2 border-transparent text-stone-500 hover:text-stone-800 flex items-center justify-center gap-1.5 transition"
+          >
+            <span>2. 제미나이 가입 인증</span>
+            <span id="tab2Check" class="text-emerald-600 font-black"></span>
+          </button>
+        </div>
+
+        <!-- TAB 1 CONTENT: RANDOM ARTWORK DRAW & PHOTO UPLOAD -->
+        <div id="tabContent1" class="p-5 space-y-5">
+          <div class="flex items-center justify-between">
+            <div>
+              <span class="text-[11px] font-extrabold text-knu-red uppercase tracking-wider">작품 찾기</span>
+              <h3 class="text-base font-extrabold text-stone-800">랜덤 카드 속 작품을 찾아주세요!</h3>
+            </div>
+            <button
+              id="redrawBtn"
+              onclick="window.app.redrawArtwork()"
+              class="text-xs font-bold px-2.5 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-700 flex items-center gap-1 transition"
+            >
+              <i data-lucide="shuffle" class="w-3.5 h-3.5"></i> 다른 카드 뽑기
+            </button>
+          </div>
+
+          <!-- 3D Flipping Card Container -->
+          <div class="perspective-1000 w-full">
+            <div id="artworkFlipCard" class="transform-style-3d relative w-full min-h-[340px] rounded-2xl">
+              
+              <!-- Card Front (Unrevealed Deck Cover) -->
+              <div id="cardFrontFace" onclick="window.app.drawRandomArtwork()" class="backface-hidden absolute inset-0 rounded-2xl bg-gradient-to-br from-knu-red via-[#115C13] to-stone-900 text-white p-6 flex flex-col items-center justify-center text-center cursor-pointer shadow-lg border-2 border-white/20 select-none">
+                <div class="w-16 h-16 rounded-2xl bg-white/15 backdrop-blur-xs flex items-center justify-center mb-4 animate-bounce">
+                  <i data-lucide="sparkles" class="w-8 h-8 text-amber-300"></i>
+                </div>
+                <span class="text-xs font-bold tracking-widest uppercase text-knu-coral">KNU ART MUSEUM 15 COLLECTION</span>
+                <h4 class="text-xl font-black mt-1">터치해서 랜덤 작품 카드 뽑기</h4>
+                <p class="text-xs text-white/80 mt-2 max-w-[250px]">
+                  15점의 경북대학교미술관 전시 작품 중 오늘 내가 찾아야 할 작품 1점이 랜덤으로 배정됩니다!
+                </p>
+                <div class="mt-5 px-4 py-2 rounded-full bg-white text-knu-red font-extrabold text-xs shadow-md">
+                  카드 뒤집기 (CLICK)
+                </div>
+              </div>
+
+              <!-- Card Back (Revealed Artwork Card) -->
+              <div id="cardBackFace" class="backface-hidden rotate-y-180 w-full rounded-2xl bg-white border-2 border-knu-red/30 shadow-md overflow-hidden">
+                <div class="bg-stone-900 text-white px-4 py-2.5 flex items-center justify-between text-xs">
+                  <span id="assignedArtNumber" class="font-black text-knu-coral">CARD #01 / 15</span>
+                  <span id="assignedArtZone" class="text-stone-300 text-[11px] flex items-center gap-1 font-semibold">
+                    <i data-lucide="palette" class="w-3 h-3 text-knu-coral"></i> <span id="assignedArtistBadge">작가명</span>
+                  </span>
+                </div>
+                <div
+                  onclick="window.app.openAssignedArtworkZoom()"
+                  class="relative bg-stone-950 min-h-[260px] max-h-[340px] w-full overflow-hidden flex items-center justify-center cursor-zoom-in group"
+                >
+                  <img
+                    id="assignedArtImage"
+                    src=""
+                    alt="배정된 미술관 작품"
+                    class="w-full max-h-[330px] object-contain bg-stone-950 transition-transform duration-300 group-hover:scale-[1.02]"
+                  />
+                  <div id="assignedArtPhotoModeBadge" class="absolute top-2.5 left-2.5 bg-black/70 backdrop-blur-xs text-amber-300 text-[10px] px-2.5 py-1 rounded-full font-bold border border-white/15">
+                    고화질 원본 적용 대기 중
+                  </div>
+                  <div class="absolute bottom-2 right-2 bg-black/75 backdrop-blur-xs text-white text-[11px] px-2.5 py-1 rounded-lg font-medium border border-white/15 flex items-center gap-1">
+                    <i data-lucide="zoom-in" class="w-3 h-3"></i> 터치하여 원본 확대보기
+                  </div>
+                </div>
+                <div class="p-4 bg-knu-soft/50 flex items-center justify-between gap-2">
+                  <div>
+                    <span class="text-[10px] font-extrabold text-knu-red uppercase tracking-wider block">찾아야 할 전시 작품</span>
+                    <h4 id="assignedArtTitle" class="font-black text-base text-stone-900 mt-0.5">작품 제목</h4>
+                    <p id="assignedArtHint" class="text-xs font-semibold text-stone-600 mt-0.5">작가명 · 경북대학교미술관 전시작</p>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Mission Prompt Box -->
+          <div class="bg-amber-50 border border-amber-200/80 rounded-2xl p-3.5 flex items-start gap-3">
+            <div class="w-8 h-8 rounded-xl bg-amber-500/15 text-amber-700 flex items-center justify-center shrink-0 mt-0.5">
+              <i data-lucide="camera" class="w-4 h-4"></i>
+            </div>
+            <div class="text-xs text-amber-950 leading-relaxed">
+              <p class="font-extrabold">해당 작품을 실제로 경북대학교미술관에 방문해서 찍어주세요!</p>
+              <p class="text-amber-800 mt-0.5">위 카드에 나온 작품을 미술관에서 찾아 직접 촬영한 사진을 아래에 첨부하면 첫 번째 미션이 완료됩니다.</p>
+            </div>
+          </div>
+
+          <!-- Photo Upload Zone 1 (Museum Artwork Verification) -->
+          <div class="space-y-2">
+            <input
+              type="file"
+              id="fileInputArt"
+              aria-label="미술관 작품 사진 첨부"
+              accept="image/*"
+              class="hidden"
+              onchange="window.app.handlePhotoUpload(event, 'art')"
+            />
+
+            <div
+              onclick="document.getElementById('fileInputArt').click()"
+              id="uploadBoxArt"
+              class="cursor-pointer border-2 border-dashed border-stone-300 hover:border-knu-red rounded-2xl p-5 text-center transition bg-stone-50/70 hover:bg-knu-soft/20"
+            >
+              <!-- Empty Prompt -->
+              <div id="artUploadEmpty" class="space-y-2 py-2">
+                <div class="w-12 h-12 rounded-2xl bg-knu-red/10 text-knu-red mx-auto flex items-center justify-center">
+                  <i data-lucide="image-plus" class="w-6 h-6"></i>
+                </div>
+                <div class="text-sm font-extrabold text-stone-700">여기를 눌러 촬영한 작품 사진 첨부</div>
+                <p class="text-[11px] text-stone-400">카메라로 바로 찍거나 사진첩에서 선택해 주세요</p>
+              </div>
+
+              <!-- Preview Container -->
+              <div id="artUploadPreviewWrap" class="hidden space-y-2">
+                <div class="relative w-full max-h-56 overflow-hidden rounded-xl border border-stone-200 bg-black/5">
+                  <img id="artUploadPreviewImg" src="" alt="미술관 인증샷 미리보기" class="w-full h-48 object-contain mx-auto" />
+                  <span class="absolute top-2 left-2 bg-emerald-600 text-white text-[11px] font-bold px-2.5 py-0.5 rounded-full shadow">
+                    ✓ 작품 인증샷 첨부 완료
+                  </span>
+                </div>
+                <div class="text-xs font-bold text-knu-red underline">사진 다시 선택하기</div>
+              </div>
+            </div>
+          </div>
+
+          <button id="submitArtBtn" onclick="window.app.submitArtMission()" disabled class="w-full py-4 px-4 rounded-2xl bg-stone-900 text-white font-extrabold text-sm disabled:opacity-40 transition">작품 사진 제출하고 미션 완료하기</button>
+        </div>
+
+        <div id="artCompletion" class="hidden p-6 text-center space-y-4" role="status">
+          <div class="w-16 h-16 mx-auto rounded-2xl bg-knu-red/20 flex items-center justify-center text-3xl font-black text-emerald-700">✓</div>
+          <span class="text-xs font-black text-emerald-700">MISSION COMPLETE</span>
+          <h3 class="text-2xl font-black text-stone-900">작품 찾기 미션 완료!</h3>
+          <p class="text-base font-bold leading-relaxed text-stone-800" style="word-break:keep-all">STAFF에게 완료 화면을 보여주고<br/>표준 사용법 (How to be &quot;Normal&quot;)<br/>작품 엽서를 받아가세요!</p>
+          <p id="artCompletionUser" class="text-sm font-bold text-stone-600"></p>
+          <p id="artCompletionWork" class="text-xs text-stone-500"></p>
+          <img id="artCompletionPhoto" alt="제출한 작품 인증 사진" class="mx-auto w-full max-h-64 object-contain rounded-xl bg-stone-100" />
+          <p id="artCompletionTime" class="text-xs text-stone-400"></p>
+        </div>
+
+        <!-- TAB 2 CONTENT: GEMINI REFERRAL LINK & SCREENSHOT UPLOAD -->
+        <div id="tabContent2" class="hidden p-5 space-y-5">
+          <div>
+            <span class="text-[11px] font-extrabold text-blue-600 uppercase tracking-wider">추가 경품 이벤트</span>
+            <h3 class="text-base font-extrabold text-stone-800">제미나이 가입 후 10,000원 상품권도 받아가세요!</h3>
+          </div>
+
+          <p class="text-sm text-stone-600 leading-relaxed" style="word-break:keep-all">추첨을 통해 20명에게 카카오톡 선물하기 상품권 10,000원을 드립니다.</p>
+
+          <!-- Gemini Benefit Card -->
+          <div id="geminiBenefitCard" class="rounded-2xl p-5 text-white shadow-md relative overflow-hidden">
+            <div class="benefit-glow absolute -right-8 -top-8 w-32 h-32 rounded-full blur-2xl pointer-events-none"></div>
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-1.5 text-xs font-bold text-blue-300">
+                <i data-lucide="sparkles" class="w-4 h-4"></i>
+                <span>Gemini 대학(원)생 혜택</span>
+              </div>
+              <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-knu-red text-white">TEAM 경북대 공식</span>
+            </div>
+            <h4 class="text-base font-black mt-3 leading-relaxed" style="word-break:keep-all">
+              대학(원)생에게 제공되는
+            </h4>
+            <p class="text-sm text-blue-100 mt-2 leading-relaxed" style="word-break:keep-all">
+              <strong>Gemini Plus(1년간 무료)</strong> /<br/>
+              <strong>Gemini Pro(4년간 7,300원)</strong><br/>
+              선택하여 가입하세요
+            </p>
+
+            <div class="benefit-prize">
+              <span>카카오톡 선물하기</span>
+              <strong>10,000원</strong>
+              <span>받아가세요!</span>
+            </div>
+
+            <a
+              id="geminiReferralLinkBtn"
+              href="https://gemini.google/students/?utm_source=student&utm_medium=social&utm_campaign=microsite_campus_kyungpook-daegu-ambassador"
+              target="_blank"
+              rel="noopener noreferrer"
+              onclick="window.app.recordLinkClick()"
+              class="mt-4 w-full py-3.5 px-4 rounded-xl bg-white hover:bg-blue-50 text-blue-950 font-black text-sm flex items-center justify-center gap-2 shadow-lg transition"
+            >
+              <span>제미나이 가입하러 가기</span>
+              <i data-lucide="external-link" class="w-4 h-4"></i>
+            </a>
+          </div>
+
+          <!-- Guide Box -->
+          <div class="bg-blue-50 border border-blue-200 rounded-2xl p-3.5 flex items-start gap-3">
+            <div class="w-8 h-8 rounded-xl bg-blue-600/15 text-blue-700 flex items-center justify-center shrink-0 mt-0.5">
+              <i data-lucide="smartphone" class="w-4 h-4"></i>
+            </div>
+            <div class="text-xs text-blue-950 leading-relaxed">
+              <p class="font-extrabold">가입 완료 화면을 캡처해서 아래에 첨부해 주세요!</p>
+              <p class="text-blue-800 mt-0.5">학생 혜택 적용 화면 스크린샷을 첨부하고<br/>아래 버튼을 눌러 상품권 추첨에 응모해 주세요.</p>
+            </div>
+          </div>
+
+          <!-- Photo Upload Zone 2 (Gemini Screenshot Verification) -->
+          <div class="space-y-2">
+            <label class="block text-xs font-extrabold text-stone-700">
+              📱 제미나이 가입 완료 캡처본 첨부 <span class="text-knu-red">*</span>
+            </label>
+
+            <input
+              type="file"
+              id="fileInputGemini"
+              accept="image/*"
+              class="hidden"
+              onchange="window.app.handlePhotoUpload(event, 'gemini')"
+            />
+
+            <div
+              onclick="document.getElementById('fileInputGemini').click()"
+              id="uploadBoxGemini"
+              class="cursor-pointer border-2 border-dashed border-stone-300 hover:border-blue-600 rounded-2xl p-5 text-center transition bg-stone-50/70 hover:bg-blue-50/30"
+            >
+              <!-- Empty Prompt -->
+              <div id="geminiUploadEmpty" class="space-y-2 py-2">
+                <div class="w-12 h-12 rounded-2xl bg-blue-600/10 text-blue-600 mx-auto flex items-center justify-center">
+                  <i data-lucide="upload-cloud" class="w-6 h-6"></i>
+                </div>
+                <div class="text-sm font-extrabold text-stone-700">여기를 눌러 제미나이 가입 캡처 이미지 첨부</div>
+                <p class="text-[11px] text-stone-400">스크린샷 이미지를 선택해 주세요</p>
+              </div>
+
+              <!-- Preview Container -->
+              <div id="geminiUploadPreviewWrap" class="hidden space-y-2">
+                <div class="relative w-full max-h-56 overflow-hidden rounded-xl border border-stone-200 bg-black/5">
+                  <img id="geminiUploadPreviewImg" src="" alt="제미나이 인증샷 미리보기" class="w-full h-48 object-contain mx-auto" />
+                  <span class="absolute top-2 left-2 bg-emerald-600 text-white text-[11px] font-bold px-2.5 py-0.5 rounded-full shadow">
+                    ✓ 가입 캡처 첨부 완료
+                  </span>
+                </div>
+                <div class="text-xs font-bold text-blue-600 underline">캡처 이미지 다시 선택하기</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Sticky Bottom Submission Bar -->
+        <div id="lotterySubmissionBar" class="hidden p-4 bg-stone-50 border-t border-stone-200/90">
+          <button
+            id="finalSubmitBtn"
+            onclick="window.app.submitFinalMission()"
+            disabled
+            class="w-full py-4 px-5 rounded-2xl font-black text-sm sm:text-base flex items-center justify-center gap-2 transition shadow-md bg-stone-300 text-stone-500 cursor-not-allowed"
+          >
+            <i data-lucide="lock" class="w-4 h-4" id="submitBtnIcon"></i>
+            <span id="submitBtnText">사진 2가지를 모두 첨부하면 추첨 응모가 활성화됩니다 (0/2)</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- VIEW 3: CELEBRATION COMPLETION TICKET SCREEN -->
+      <section id="viewSuccess" class="hidden p-6 text-center space-y-5">
+        <div class="w-16 h-16 rounded-3xl bg-emerald-500/15 text-emerald-600 mx-auto flex items-center justify-center shadow-inner">
+          <i data-lucide="party-popper" class="w-9 h-9"></i>
+        </div>
+
+        <div>
+          <span class="px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 font-extrabold text-xs">
+            MISSION COMPLETE · 응모 완료
+          </span>
+          <h3 class="text-2xl font-black text-stone-900 mt-2">미션·추첨 응모 성공!</h3>
+          <p class="text-xs text-stone-600 mt-1">
+            미술관 랜덤 작품 인증과 제미나이 가입 인증이 성공적으로 완료되었습니다
+          </p>
+        </div>
+
+        <!-- Verification Ticket Card -->
+        <div class="bg-stone-50 border-2 border-dashed border-stone-300 rounded-2xl p-4 text-left space-y-3">
+          <div class="flex items-center justify-between border-b border-stone-200 pb-2.5">
+            <div>
+              <span class="text-[10px] font-bold text-stone-400 block">응모 참가자 ID</span>
+              <span id="ticketUserId" class="text-sm font-black text-stone-800">-</span>
+            </div>
+            <div class="text-right">
+              <span class="text-[10px] font-bold text-stone-400 block">배정 작품 카드</span>
+              <span id="ticketArtworkName" class="text-xs font-extrabold text-knu-red">-</span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2.5">
+            <div class="bg-white p-2 rounded-xl border border-stone-200">
+              <span class="text-[10px] font-bold text-stone-500 block mb-1">1. 미술관 현장 인증</span>
+              <img id="ticketImgArt" src="" alt="작품 인증" class="w-full h-24 object-cover rounded-lg bg-stone-100" />
+            </div>
+            <div class="bg-white p-2 rounded-xl border border-stone-200">
+              <span class="text-[10px] font-bold text-stone-500 block mb-1">2. 제미나이 가입 캡처</span>
+              <img id="ticketImgGemini" src="" alt="제미나이 인증" class="w-full h-24 object-cover rounded-lg bg-stone-100" />
+            </div>
+          </div>
+
+          <div class="text-[11px] text-stone-500 flex items-center justify-between pt-1">
+            <span>응모 상태: <strong class="text-emerald-600">정상 접수됨 (추첨 대상)</strong></span>
+            <span id="ticketTimestamp" class="text-[10px]"></span>
+          </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-2">
+          <button
+            onclick="window.app.editSubmission()"
+            class="flex-1 py-3 px-4 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold text-xs transition"
+          >
+            인증 사진 수정하기
+          </button>
+          <button
+            onclick="window.app.logoutUser()"
+            class="flex-1 py-3 px-4 rounded-xl bg-knu-red hover:bg-knu-darkRed text-white font-bold text-xs transition"
+          >
+            처음 화면으로 돌아가기
+          </button>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- ==========================================
+         ORGANIZER ARCHIVE & SETTINGS DASHBOARD
+         ========================================== -->
+    <div id="adminContainer" class="hidden w-full bg-white rounded-3xl shadow-xl border border-stone-200 overflow-hidden">
+      <div class="flex justify-end bg-stone-100 px-4 pt-3">
+        <button type="button" onclick="window.app.logoutAdmin()" class="px-4 py-2 rounded-xl bg-stone-900 hover:bg-stone-800 text-white text-xs font-bold transition">운영진 로그아웃</button>
+      </div>
+      <!-- Admin Header -->
+      <div class="bg-stone-900 text-white p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <span class="text-xs font-extrabold text-knu-coral uppercase tracking-wider">ORGANIZER ARCHIVE & SETTINGS</span>
+          <h2 class="text-xl font-black mt-0.5">경북대학교미술관 X 제미나이 이벤트 아카이브 저장소</h2>
+          <p class="text-xs text-stone-400 mt-1">
+            참가자별 아이디, 배정된 작품(15종), 업로드된 인증 사진 2종을 검수하고 추첨 및 15가지 원본 작품 사진/가입 링크를 관리할 수 있습니다.
+          </p>
+        </div>
+        <div class="flex flex-wrap items-center gap-2">
+          <button
+            onclick="window.app.switchAdminTab('archive')"
+            id="adminTabArchiveBtn"
+            class="px-4 py-2 rounded-xl text-xs font-extrabold bg-knu-red text-white transition"
+          >
+            📂 응모자 아카이브 (<span id="adminTotalCount">0</span>)
+          </button>
+          <button
+            onclick="window.app.switchAdminTab('config')"
+            id="adminTabConfigBtn"
+            class="px-4 py-2 rounded-xl text-xs font-extrabold bg-stone-800 text-stone-300 hover:text-white transition"
+          >
+            ⚙️ 15종 작품 사진 & 팀 링크 설정
+          </button>
+          <button
+            onclick="window.app.toggleAdminMode()"
+            class="px-3 py-2 rounded-xl text-xs font-bold bg-white/10 hover:bg-white/20 text-white transition"
+          >
+            닫기 ✕
+          </button>
+        </div>
+      </div>
+
+      <!-- ADMIN SUB-VIEW 1: PARTICIPANT ARCHIVE & LUCKY DRAW -->
+      <div id="adminViewArchive" class="p-5 sm:p-6 space-y-6">
+        <!-- Stats & Action Toolbar -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+          <div class="p-4 rounded-2xl bg-stone-50 border border-stone-200">
+            <span class="text-xs text-stone-500 font-semibold">전체 참여 시작 인원</span>
+            <div id="statTotalUsers" class="text-2xl font-black text-stone-900 mt-1">0명</div>
+          </div>
+          <div class="p-4 rounded-2xl bg-emerald-50 border border-emerald-200">
+            <span class="text-xs text-emerald-700 font-semibold">미션 완료 (사진 2종 첨부 완료)</span>
+            <div id="statCompletedUsers" class="text-2xl font-black text-emerald-700 mt-1">0명</div>
+          </div>
+          <div class="p-4 rounded-2xl bg-amber-50 border border-amber-200 flex flex-col justify-between">
+            <span class="text-xs text-amber-800 font-semibold">완료자 중 랜덤 경품 추첨</span>
+            <button
+              onclick="window.app.openLuckyDrawModal()"
+              class="mt-2 py-2 px-3 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-xs transition"
+            >
+              <i data-lucide="trophy" class="w-4 h-4"></i> 랜덤 추첨기 실행
+            </button>
+          </div>
+          <div class="p-4 rounded-2xl bg-blue-50 border border-blue-200 flex flex-col justify-between">
+            <span class="text-xs text-blue-800 font-semibold">아카이브 명단 내보내기</span>
+            <button
+              onclick="window.app.exportEntriesCSV()"
+              class="mt-2 py-2 px-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-xs transition"
+            >
+              <i data-lucide="download" class="w-4 h-4"></i> CSV 엑셀 다운로드
+            </button>
+          </div>
+        </div>
+
+        <!-- Search & Filter Bar -->
+        <div class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
+          <div class="relative flex-1">
+            <i data-lucide="search" class="w-4 h-4 text-stone-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+            <input
+              type="text"
+              id="archiveSearchInput"
+              oninput="window.app.renderArchiveList()"
+              placeholder="아이디, 연락처 또는 작품명으로 검색..."
+              class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-stone-50 border border-stone-200 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-knu-red"
+            />
+          </div>
+          <div class="flex items-center gap-2">
+            <select
+              id="archiveFilterSelect"
+              onchange="window.app.renderArchiveList()"
+              class="px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-200 text-xs font-bold text-stone-700 focus:outline-none"
+            >
+              <option value="all">전체 보기</option>
+              <option value="completed">미션 성공 (사진 2장 완료)만 보기</option>
+              <option value="incomplete">진행 중 (미완료)만 보기</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Archive Cards Grid -->
+        <div id="archiveListContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <!-- Populated dynamically by JS -->
+        </div>
+      </div>
+
+      <!-- ADMIN SUB-VIEW 2: 15 ARTWORKS & GEMINI LINK CONFIGURATION -->
+      <div id="adminViewConfig" class="hidden p-5 sm:p-6 space-y-6">
+        <!-- Smart 15 Photos Bulk Auto-Matcher Box -->
+        <div class="bg-gradient-to-r from-knu-soft via-amber-50 to-white border-2 border-knu-red/30 rounded-2xl p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div class="space-y-1">
+            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-knu-red text-white">
+              ⚡ 원클릭 파일명 자동 매칭
+            </span>
+            <h3 class="text-base font-black text-stone-900">가지고 계신 15장 작품 사진 한 번에 일괄 등록하기</h3>
+            <p class="text-xs text-stone-600 leading-relaxed">
+              <strong>유령과 바다, 그리고 뫼비우스 김우진.jpg</strong> 등 15개 파일을 한꺼번에 선택하면, 파일명의 작품명·작가명을 자동 인식하여 1~15번 카드에 즉시 실물 사진으로 매칭 및 저장합니다! (기본 상태에서도 각 작품 특징을 살린 프리뷰가 이미 내장되어 있습니다.)
+            </p>
+          </div>
+          <div class="shrink-0">
+            <label class="cursor-pointer inline-flex items-center gap-2 px-5 py-3.5 rounded-xl bg-knu-red hover:bg-knu-darkRed text-white font-black text-xs sm:text-sm shadow-md transition">
+              <i data-lucide="folder-up" class="w-4 h-4"></i>
+              <span>📁 15장 사진 한 번에 선택하여 자동 매칭</span>
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                class="hidden"
+                onchange="window.app.handleBulkArtworkUpload(event)"
+              />
+            </label>
+          </div>
+        </div>
+
+        <!-- Team Gemini Referral Link Config -->
+        <div class="bg-blue-50/70 border border-blue-200 rounded-2xl p-5 space-y-3">
+          <div class="flex items-center justify-between">
+            <div>
+              <span class="text-[11px] font-extrabold text-blue-600 uppercase">STEP 2 LINK SETTING (기본 적용 완료)</span>
+              <h3 class="text-base font-black text-stone-900">TEAM 경북대 제미나이 가입 링크 설정</h3>
+              <p class="text-xs text-stone-600">요청하신 경북대 앰배서더 캠페인 링크가 기본값으로 연결되어 있습니다.</p>
+            </div>
+          </div>
+          <div class="flex flex-col sm:flex-row gap-2">
+            <input
+              type="url"
+              id="configGeminiUrlInput"
+              value="https://gemini.google/students/?utm_source=student&utm_medium=social&utm_campaign=microsite_campus_kyungpook-daegu-ambassador"
+              class="flex-1 px-4 py-3 rounded-xl bg-white border border-blue-300 text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-600"
+            />
+            <button
+              onclick="window.app.saveGlobalConfig()"
+              class="px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs sm:text-sm shrink-0 transition shadow-sm"
+            >
+              링크 및 작품 설정 전체 저장하기
+            </button>
+          </div>
+        </div>
+
+        <!-- 15 Artworks Customization Section -->
+        <div class="space-y-3">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div>
+              <span class="text-[11px] font-extrabold text-knu-red uppercase">15 ARTWORKS DATASET</span>
+              <h3 class="text-base font-black text-stone-900">경북대학교미술관 15가지 전시 작품 목록 (제목 · 작가명 적용 완료)</h3>
+              <p class="text-xs text-stone-600">
+                15개 파일명의 <strong>작품 제목</strong>과 <strong>작가명</strong>이 모두 세팅되어 있습니다. 개별 카드에서도 언제든 사진을 교체할 수 있습니다.
+              </p>
+            </div>
+            <button
+              onclick="window.app.resetDefaultArtworks()"
+              class="self-start px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-600 text-xs font-bold transition"
+            >
+              기본 15종 일러스트로 초기화
+            </button>
+          </div>
+
+          <div id="configArtworksGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Lucky Draw Modal -->
+  <div id="luckyDrawModal" class="fixed inset-0 z-50 hidden bg-black/70 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 text-center space-y-5 shadow-2xl border border-stone-200">
+      <div class="w-14 h-14 rounded-2xl bg-amber-500/15 text-amber-600 mx-auto flex items-center justify-center">
+        <i data-lucide="award" class="w-8 h-8"></i>
+      </div>
+      <div>
+        <span class="text-xs font-extrabold text-amber-600 uppercase tracking-wider">LUCKY DRAW</span>
+        <h3 class="text-xl font-black text-stone-900 mt-0.5">미션 성공 참가자 랜덤 추첨</h3>
+        <p class="text-xs text-stone-500 mt-1">사진 2가지를 모두 제출 완료한 응모자 중에서 무작위로 당첨자를 뽑습니다.</p>
+      </div>
+
+      <div id="luckyDrawDisplayBox" class="py-6 px-4 rounded-2xl bg-stone-900 text-white space-y-1">
+        <div id="luckyWinnerId" class="text-2xl font-black text-amber-400 tracking-tight">추첨 대기 중...</div>
+        <div id="luckyWinnerContact" class="text-xs text-stone-300">-</div>
+        <div id="luckyWinnerArt" class="text-[11px] text-knu-coral pt-1">-</div>
+      </div>
+
+      <div class="flex gap-2">
+        <button
+          onclick="window.app.startLuckyDrawSpin()"
+          class="flex-1 py-3 rounded-xl bg-knu-red hover:bg-knu-darkRed text-white font-extrabold text-sm transition shadow-md"
+        >
+          🎲 당첨자 뽑기!
+        </button>
+        <button
+          onclick="window.app.closeLuckyDrawModal()"
+          class="py-3 px-4 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold text-sm transition"
+        >
+          닫기
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Photo Inspection Lightbox Modal -->
+  <div id="photoLightboxModal" onclick="window.app.closeLightbox()" class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="max-w-lg w-full bg-white rounded-2xl overflow-hidden shadow-2xl" onclick="event.stopPropagation()">
+      <div class="px-4 py-3 bg-stone-900 text-white flex items-center justify-between">
+        <span id="lightboxCaption" class="text-xs font-bold">인증 사진 상세보기</span>
+        <button onclick="window.app.closeLightbox()" class="text-stone-400 hover:text-white text-sm font-bold">닫기 ✕</button>
+      </div>
+      <div class="p-4 bg-stone-100 flex items-center justify-center max-h-[75vh]">
+        <img id="lightboxImg" src="" alt="인증 이미지 확대" class="max-h-[70vh] w-auto object-contain rounded-lg" />
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom Toast Notification -->
+  <div id="toastBox" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 pointer-events-none opacity-0 translate-y-2 transition-all duration-300">
+    <div class="px-4 py-2.5 rounded-2xl bg-stone-900/95 text-white text-xs font-bold shadow-xl flex items-center gap-2 border border-white/10">
+      <span id="toastMessage">알림 메시지</span>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="py-4 text-center text-[11px] text-stone-400">
+    <p>경북대학교미술관 랜덤 카드 투어 & TEAM 경북대 Google AI 프로모션</p>
+  </footer>
+
+  <!-- ==========================================
+       FIREBASE & APPLICATION LOGIC
+       ========================================== -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc, deleteDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    const DEFAULT_TEAM_GEMINI_URL = "https://gemini.google/students/?utm_source=student&utm_medium=social&utm_campaign=microsite_campus_kyungpook-daegu-ambassador";
+
+    // Bespoke SVG visual recreations of each of the 15 KNU Art Museum artworks
+    function createBespokeArtworkSvg(id) {
+      let inner = "";
+      switch (id) {
+        case 1:
+          inner = `
+            <rect width="600" height="450" fill="#CFCFCF"/>
+            <rect x="24" y="80" width="272" height="250" fill="#18181B" stroke="#111" stroke-width="6"/>
+            <rect x="115" y="135" width="90" height="135" fill="#EEF2FF" stroke="#3F3F46" stroke-width="3"/>
+            <line x1="160" y1="135" x2="160" y2="270" stroke="#71717A" stroke-width="2"/>
+            <rect x="95" y="295" width="130" height="20" fill="rgba(0,0,0,0.6)"/>
+            <text x="160" y="309" text-anchor="middle" fill="#fff" font-size="9" font-family="sans-serif">길은 점차 폐허로 변하고,</text>
+            <rect x="300" y="80" width="276" height="250" fill="#0018FF" stroke="#111" stroke-width="6"/>
+            <g stroke="#60A5FA" stroke-width="1.5" fill="#1E293B" opacity="0.85">
+              <rect x="315" y="185" width="75" height="65"/>
+              <rect x="405" y="110" width="70" height="150"/>
+              <rect x="490" y="110" width="75" height="165"/>
+            </g>
+            <polygon points="310,325 410,265 565,265 565,325" fill="#7C3AED" opacity="0.55"/>
+            <text x="438" y="309" text-anchor="middle" fill="#fff" font-size="9" font-family="sans-serif">Meanwhile, the other roads...</text>
+          `;
+          break;
+        case 2:
+          inner = `
+            <rect width="600" height="450" fill="#181A1D"/>
+            <rect x="55" y="75" width="490" height="300" fill="#0F172A" stroke="#27272A" stroke-width="6"/>
+            <rect x="60" y="80" width="155" height="290" fill="#0038FF"/>
+            <path d="M60 150 Q100 135 140 150 T215 150 M60 220 Q100 205 140 220 T215 220" stroke="#fff" stroke-width="4" fill="none"/>
+            <text x="137" y="190" text-anchor="middle" fill="#fff" font-size="13" font-weight="800" font-family="serif">NOAH 950 YEARS</text>
+            <rect x="220" y="80" width="160" height="290" fill="#E5E7EB"/>
+            <rect x="245" y="135" width="110" height="160" rx="16" fill="#9CA3AF" stroke="#374151" stroke-width="4"/>
+            <rect x="265" y="155" width="70" height="48" rx="4" fill="#1D4ED8"/>
+            <rect x="288" y="235" width="24" height="55" rx="6" fill="#DBEAFE" stroke="#2563EB" stroke-width="2"/>
+            <rect x="385" y="80" width="155" height="290" fill="#D6D3D1"/>
+            <polygon points="390,260 535,240 535,365 390,365" fill="#1F2937"/>
+            <polygon points="410,295 485,275 525,305 450,330" fill="#F3F4F6"/>
+            <circle cx="458" cy="255" r="18" fill="#FFF" stroke="#1F2937" stroke-width="4"/>
+          `;
+          break;
+        case 3:
+          inner = `
+            <rect width="600" height="450" fill="#B5E533"/>
+            <rect x="135" y="38" width="330" height="374" fill="#1D70D6" stroke="#C8A98E" stroke-width="14"/>
+            <path d="M225 85 L375 85 L415 190 L415 315 Q415 375 350 375 L250 375 Q185 375 185 315 L185 190 Z" fill="#B84A14" stroke="#7C2D12" stroke-width="3"/>
+            <rect x="265" y="102" width="70" height="22" rx="6" fill="#1D70D6"/>
+            <rect x="200" y="205" width="25" height="80" rx="10" fill="#1D70D6"/>
+            <rect x="375" y="205" width="25" height="80" rx="10" fill="#1D70D6"/>
+            <text x="300" y="182" text-anchor="middle" fill="#E2E8F0" font-size="11" font-weight="800" font-family="sans-serif">BREAK GLASS IN CASE OF EMERGENCY</text>
+            <text x="300" y="225" text-anchor="middle" fill="#7C2D12" font-size="12" font-weight="800" font-family="sans-serif">SOMETIMES,</text>
+            <text x="300" y="260" text-anchor="middle" fill="#7C2D12" font-size="12" font-weight="800" font-family="sans-serif">DEAD IS</text>
+            <text x="300" y="295" text-anchor="middle" fill="#7C2D12" font-size="12" font-weight="800" font-family="sans-serif">BETTAH</text>
+          `;
+          break;
+        case 4:
+          inner = `
+            <rect width="600" height="450" fill="#D4D4D8"/>
+            <polygon points="300,35 470,165 455,415 145,415 130,165" fill="#F5D0FE" stroke="#854D0E" stroke-width="8"/>
+            <polygon points="300,45 365,140 235,140" fill="#1E293B"/>
+            <circle cx="300" cy="95" r="18" fill="#FEF08A"/>
+            <path d="M235 140 Q300 185 365 140" fill="#10B981" stroke="#047857" stroke-width="14"/>
+            <rect x="195" y="190" width="95" height="205" rx="30" fill="#1E3A8A"/>
+            <circle cx="245" cy="215" r="20" fill="#FEF08A"/>
+            <path d="M315 190 Q395 160 430 310 L420 405 L310 405 Z" fill="#B45309"/>
+            <ellipse cx="385" cy="275" rx="28" ry="14" fill="#FFF"/>
+            <circle cx="380" cy="275" r="10" fill="#111"/>
+          `;
+          break;
+        case 5:
+          inner = `
+            <rect width="600" height="450" fill="#18181B"/>
+            <g transform="translate(28,85)">
+              <rect width="168" height="280" fill="#F4F4F5" rx="2"/>
+              <rect x="22" y="28" width="124" height="224" fill="#27272A"/>
+              <ellipse cx="84" cy="140" rx="38" ry="52" fill="#52525B"/>
+              <path d="M52 115 Q84 80 116 120 Q110 185 80 190 Q50 180 52 115" fill="none" stroke="#FCA5A5" stroke-width="2"/>
+            </g>
+            <g transform="translate(216,85)">
+              <rect width="168" height="280" fill="#F4F4F5" rx="2"/>
+              <rect x="22" y="28" width="124" height="224" fill="#1F2937"/>
+              <ellipse cx="84" cy="140" rx="38" ry="52" fill="#4B5563"/>
+              <path d="M55 105 Q90 65 115 115 Q118 175 84 195 Q48 175 55 105 M65 130 L105 125" fill="none" stroke="#F87171" stroke-width="2.5"/>
+            </g>
+            <g transform="translate(404,85)">
+              <rect width="168" height="280" fill="#F4F4F5" rx="2"/>
+              <rect x="22" y="28" width="124" height="224" fill="#0F172A"/>
+              <ellipse cx="84" cy="140" rx="38" ry="52" fill="#334155"/>
+              <path d="M50 110 Q85 75 120 115 Q115 180 84 192 Q48 175 50 110" fill="none" stroke="#86EFAC" stroke-width="2"/>
+            </g>
+          `;
+          break;
+        case 6: {
+          let people = "";
+          for (let r = 0; r < 6; r++) {
+            for (let c = 0; c < 13; c++) {
+              const px = 88 + c * 34;
+              const py = 86 + r * 48;
+              const col = (r + c) % 3 === 0 ? "#1E293B" : (r + c) % 2 === 0 ? "#475569" : "#7F1D1D";
+              people += `<circle cx="${px}" cy="${py}" r="3.5" fill="#27272A"/><rect x="${px - 4}" y="${py + 4}" width="8" height="16" rx="2" fill="${col}"/><line x1="${px - 2}" y1="${py + 20}" x2="${px - 2}" y2="${py + 31}" stroke="#111" stroke-width="2"/><line x1="${px + 2}" y1="${py + 20}" x2="${px + 2}" y2="${py + 31}" stroke="#111" stroke-width="2"/>`;
+            }
+          }
+          inner = `
+            <rect width="600" height="450" fill="#27272A"/>
+            <rect x="45" y="42" width="510" height="366" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="12"/>
+            ${people}
+          `;
+          break;
+        }
+        case 7:
+          inner = `
+            <rect width="600" height="450" fill="#111827"/>
+            <rect x="20" y="110" width="560" height="230" fill="#27272A" stroke="#090D16" stroke-width="4"/>
+            <circle cx="490" cy="165" r="55" fill="#4C1D95" opacity="0.6"/>
+            <circle cx="255" cy="195" r="28" fill="none" stroke="#FFF" stroke-width="8"/>
+            <circle cx="255" cy="195" r="10" fill="#F87171"/>
+            <g stroke="#E0F2FE" stroke-width="2" fill="none">
+              <line x1="310" y1="160" x2="360" y2="145"/><line x1="310" y1="180" x2="365" y2="175"/><line x1="310" y1="200" x2="360" y2="210"/>
+              <rect x="380" y="255" width="40" height="75"/><rect x="435" y="240" width="55" height="90"/><rect x="505" y="220" width="50" height="110"/>
+              <path d="M55 240 Q85 180 110 240 L110 325 L55 325 Z" stroke="#C084FC" stroke-width="3"/>
+            </g>
+          `;
+          break;
+        case 8:
+          inner = `
+            <rect width="600" height="450" fill="#A3E635"/>
+            <rect x="165" y="135" width="270" height="180" fill="#14532D" stroke="#FAFAFA" stroke-width="12"/>
+            <text x="300" y="242" text-anchor="middle" fill="#DCFCE7" font-size="48" font-weight="900" letter-spacing="6" font-family="sans-serif">ONLY</text>
+          `;
+          break;
+        case 9: {
+          let ticks = "";
+          for (let i = 0; i < 18; i++) {
+            const w = i % 5 === 0 ? 28 : 16;
+            ticks += `<line x1="215" y1="${115 + i * 14}" x2="${215 + w}" y2="${115 + i * 14}" stroke="#FFF" stroke-width="3"/>`;
+          }
+          inner = `
+            <rect width="600" height="450" fill="#D6D3D1"/>
+            <polygon points="0,335 600,300 600,450 0,450" fill="#78716C"/>
+            <rect x="135" y="160" width="80" height="205" fill="#09090B"/>
+            <rect x="215" y="95" width="245" height="270" fill="#09090B"/>
+            <rect x="255" y="95" width="26" height="80" fill="#F5F5F4"/>
+            <rect x="315" y="95" width="26" height="145" fill="#F5F5F4"/>
+            <rect x="380" y="95" width="24" height="75" fill="#F5F5F4"/>
+            <rect x="435" y="95" width="24" height="205" fill="#F5F5F4"/>
+            ${ticks}
+            <rect x="255" y="235" width="75" height="120" rx="35" fill="none" stroke="#F5F5F4" stroke-width="24"/>
+            <line x1="40" y1="395" x2="560" y2="375" stroke="#BEF264" stroke-width="10"/>
+          `;
+          break;
+        }
+        case 10:
+          inner = `
+            <rect width="600" height="450" fill="#84CC16"/>
+            <rect x="42" y="155" width="235" height="150" fill="#52525B" stroke="#18181B" stroke-width="5"/>
+            <circle cx="145" cy="195" r="18" fill="#FDE68A"/>
+            <rect x="120" y="215" width="50" height="65" rx="6" fill="#65A30D"/>
+            <rect x="318" y="150" width="240" height="155" fill="#0022CC" stroke="#18181B" stroke-width="5"/>
+            <circle cx="368" cy="225" r="10" fill="#FFF"/>
+            <circle cx="395" cy="225" r="10" fill="#FFF"/>
+            <path d="M425 215 A10 10 0 1 0 425 235 Z" fill="#FFF"/>
+            <path d="M452 215 A10 10 0 1 0 452 235 Z" fill="#FFF"/>
+            <path d="M480 215 A10 10 0 0 0 480 235 A7 10 0 0 1 480 215" fill="#FFF"/>
+          `;
+          break;
+        case 11:
+          inner = `
+            <rect width="600" height="450" fill="#D6D3D1"/>
+            <rect x="75" y="65" width="450" height="320" fill="#18181B" stroke="#A8A29E" stroke-width="12"/>
+            <line x1="210" y1="75" x2="335" y2="375" stroke="#78716C" stroke-width="26"/>
+            <g fill="#E7E5E4" stroke="#57534E" stroke-width="3">
+              <rect x="110" y="110" width="65" height="45" transform="rotate(-15 110 110)"/>
+              <rect x="135" y="185" width="75" height="50" transform="rotate(-15 135 185)"/>
+              <rect x="155" y="265" width="70" height="55" transform="rotate(-15 155 265)"/>
+              <rect x="295" y="105" width="85" height="55" transform="rotate(-15 295 105)"/>
+              <rect x="315" y="190" width="75" height="65" transform="rotate(-15 315 190)"/>
+              <rect x="395" y="245" width="75" height="55" transform="rotate(-15 395 245)"/>
+            </g>
+            <g fill="#18181B" font-size="14" font-weight="900" font-family="serif">
+              <text x="135" y="135">20</text><text x="165" y="210">6</text><text x="185" y="290">35</text>
+              <text x="330" y="135">12</text><text x="345" y="225">11</text><text x="425" y="275">2</text>
+            </g>
+          `;
+          break;
+        case 12:
+          inner = `
+            <rect width="600" height="450" fill="#1F2937"/>
+            <rect x="65" y="75" width="470" height="300" fill="#ECFDF5" stroke="#F5F5F4" stroke-width="16"/>
+            <rect x="85" y="95" width="430" height="260" fill="#D9F99D"/>
+            <path d="M85 95 L515 95 L515 185 L85 215 Z" fill="#365314"/>
+            <line x1="85" y1="225" x2="410" y2="195" stroke="#ECFDF5" stroke-width="3"/>
+            <line x1="85" y1="265" x2="410" y2="235" stroke="#ECFDF5" stroke-width="3"/>
+            <g fill="#14532D">
+              <circle cx="230" cy="255" r="9"/><rect x="222" y="265" width="16" height="45"/>
+              <circle cx="275" cy="252" r="9"/><rect x="267" y="262" width="16" height="48"/>
+              <circle cx="325" cy="248" r="9"/><rect x="317" y="258" width="16" height="50"/>
+              <circle cx="375" cy="245" r="9"/><rect x="367" y="255" width="16" height="52"/>
+            </g>
+            <rect x="435" y="255" width="75" height="55" rx="12" fill="#84CC16" stroke="#365314" stroke-width="3"/>
+          `;
+          break;
+        case 13:
+          inner = `
+            <rect width="600" height="450" fill="#E5E5E5"/>
+            <rect x="235" y="345" width="130" height="85" fill="#FAFAFA" stroke="#A3A3A3" stroke-width="2"/>
+            <g transform="rotate(-12 295 235)">
+              <rect x="235" y="135" width="120" height="190" fill="#FFFFFF" stroke="#D4D4D8" stroke-width="3"/>
+              <line x1="255" y1="165" x2="335" y2="165" stroke="#52525B" stroke-width="3"/>
+              <line x1="255" y1="185" x2="325" y2="185" stroke="#71717A" stroke-width="2"/>
+              <line x1="255" y1="205" x2="330" y2="205" stroke="#71717A" stroke-width="2"/>
+              <line x1="255" y1="225" x2="310" y2="225" stroke="#71717A" stroke-width="2"/>
+            </g>
+          `;
+          break;
+        case 14:
+          inner = `
+            <rect width="600" height="450" fill="#3F3F46"/>
+            <rect x="135" y="55" width="330" height="340" fill="#F4F4F5" stroke="#71717A" stroke-width="10"/>
+            <rect x="175" y="95" width="250" height="110" fill="#A1A1AA" stroke="#52525B" stroke-width="3"/>
+            <line x1="175" y1="145" x2="425" y2="125" stroke="#F4F4F5" stroke-width="4"/>
+            <rect x="175" y="225" width="250" height="130" fill="#71717A" stroke="#52525B" stroke-width="3"/>
+            <circle cx="245" cy="275" r="14" fill="#F4F4F5"/><circle cx="290" cy="275" r="14" fill="#F4F4F5"/><circle cx="335" cy="275" r="14" fill="#F4F4F5"/>
+            <circle cx="268" cy="315" r="14" fill="#F4F4F5"/><circle cx="313" cy="315" r="14" fill="#F4F4F5"/>
+          `;
+          break;
+        case 15:
+        default:
+          inner = `
+            <rect width="600" height="450" fill="#B91C1C"/>
+            <circle cx="300" cy="225" r="150" fill="#F87171" opacity="0.25"/>
+            <path d="M180 225 C180 145 420 145 420 225 C420 305 180 305 180 225 Z" fill="none" stroke="#FEF2F2" stroke-width="12"/>
+            <circle cx="235" cy="205" r="12" fill="#FEF2F2"/><circle cx="365" cy="205" r="12" fill="#FEF2F2"/>
+            <path d="M250 250 Q300 280 350 250" fill="none" stroke="#FEF2F2" stroke-width="6" stroke-linecap="round"/>
+          `;
+          break;
+      }
+
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 450" width="600" height="450">${inner}</svg>`;
+      return "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(svg);
+    }
+
+    const DEFAULT_ARTWORKS = [
+      { id: 1, title: "표준 사용법(How to be “Normal”)", artist: "박미나", hint: "박미나 · 경북대학교미술관 전시작", isDefaultSvg: true },
+      { id: 2, title: "노아 950년", artist: "권용주", hint: "권용주 · 경북대학교미술관 전시작", isDefaultSvg: true },
+      { id: 3, title: "비상시 깨뜨리시오", artist: "손승범", hint: "손승범 · 경북대학교미술관 전시작", isDefaultSvg: true },
+      { id: 4, title: "나이스 투 미츄", artist: "손승범", hint: "손승범 · 경북대학교미술관 전시작", isDefaultSvg: true },
+      { id: 5, title: "당신은 오늘 어땠나요?", artist: "하단", hint: "하단 · 경북대학교미술관 전시작", isDefaultSvg: true },
+      { id: 6, title: "대중들", artist: "조혜진", hint: "조혜진 · 경북대학교미술관 전시작", isDefaultSvg: true },
+      { id: 7, title: "동그라미는 모서리 0개", artist: "이소연", hint: "이소연 · 경북대학교미술관 전시작", isDefaultSvg: true },
+      { id: 8, title: "오직", artist: "정경호", hint: "정경호 · 경북대학교미술관 전시작", isDefaultSvg: true },
+      { id: 9, title: "표준자", artist: "정경호", hint: "정경호 · 경북대학교미술관 전시작", isDefaultSvg: true },
+      { id: 10, title: "아아아아아(AAAAAA)", artist: "손승범", hint: "손승범 · 경북대학교미술관 전시작", isDefaultSvg: true },
+      { id: 11, title: "숫자도감 1", artist: "장태원", hint: "장태원 · 경북대학교미술관 전시작", isDefaultSvg: true },
+      { id: 12, title: "평화로운 사람들", artist: "조혜진", hint: "조혜진 · 경북대학교미술관 전시작", isDefaultSvg: true },
+      { id: 13, title: "사라지는 책", artist: "구민자", hint: "구민자 · 경북대학교미술관 전시작", isDefaultSvg: true },
+      { id: 14, title: "가나다", artist: "정경호", hint: "정경호 · 경북대학교미술관 전시작", isDefaultSvg: true },
+      { id: 15, title: "유령과 바다, 그리고 뫼비우스", artist: "김우진", hint: "김우진 · 경북대학교미술관 전시작", isDefaultSvg: true }
+    ].map(item => ({
+      ...item,
+      image: createBespokeArtworkSvg(item.id)
+    }));
+
+    const LOCAL_KEYS = {
+      SESSION: "knu_art_gemini_session_v1",
+      CONFIG: "knu_art_gemini_config_v1",
+      ENTRIES: "knu_art_gemini_entries_v1",
+      ADMIN_AUTH: "knu_art_gemini_admin_auth_v1"
+    };
+
+    const state = {
+      currentUser: null,
+      artworks: DEFAULT_ARTWORKS.map(a => ({ ...a })),
+      teamGeminiUrl: DEFAULT_TEAM_GEMINI_URL,
+      entries: {},
+      isAdminMode: false,
+      adminAuthenticated: false,
+      currentMissionTab: 1,
+      db: null,
+      auth: null,
+      cloudEnabled: false,
+      appId: "knu-art-gemini-2026"
+    };
+
+    function showToast(msg, duration = 2600) {
+      const box = document.getElementById("toastBox");
+      const text = document.getElementById("toastMessage");
+      if (!box || !text) return;
+      text.textContent = msg;
+      box.classList.remove("opacity-0", "translate-y-2");
+      box.classList.add("opacity-100", "translate-y-0");
+      clearTimeout(window.__toastTimer);
+      window.__toastTimer = setTimeout(() => {
+        box.classList.remove("opacity-100", "translate-y-0");
+        box.classList.add("opacity-0", "translate-y-2");
+      }, duration);
+    }
+
+    function escapeHtml(str) {
+      return String(str || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function formatTimestamp(ts) {
+      if (!ts) return "-";
+      const d = new Date(ts);
+      if (Number.isNaN(d.getTime())) return "-";
+      const pad = n => String(n).padStart(2, "0");
+      return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    }
+
+    function compressImageFile(file, maxSide = 1280, quality = 0.82) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onerror = reject;
+        reader.onload = () => {
+          const img = new Image();
+          img.onerror = reject;
+          img.onload = () => {
+            let { width, height } = img;
+            if (width > maxSide || height > maxSide) {
+              if (width >= height) {
+                height = Math.round((height * maxSide) / width);
+                width = maxSide;
+              } else {
+                width = Math.round((width * maxSide) / height);
+                height = maxSide;
+              }
+            }
+            const canvas = document.createElement("canvas");
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0, width, height);
+            resolve(canvas.toDataURL("image/jpeg", quality));
+          };
+          img.src = reader.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function loadLocalData() {
+      try {
+        const savedConfig = localStorage.getItem(LOCAL_KEYS.CONFIG);
+        if (savedConfig) {
+          const parsed = JSON.parse(savedConfig);
+          if (parsed.teamGeminiUrl) state.teamGeminiUrl = parsed.teamGeminiUrl;
+          if (Array.isArray(parsed.artworks) && parsed.artworks.length === 15) {
+            state.artworks = parsed.artworks.map((a, idx) => ({
+              ...DEFAULT_ARTWORKS[idx],
+              ...a,
+              id: DEFAULT_ARTWORKS[idx].id,
+              image: a.image || DEFAULT_ARTWORKS[idx].image
+            }));
+          }
+        }
+      } catch (e) {
+        console.warn("Config load error:", e);
+      }
+
+      try {
+        const savedEntries = localStorage.getItem(LOCAL_KEYS.ENTRIES);
+        if (savedEntries) {
+          state.entries = JSON.parse(savedEntries) || {};
+        }
+      } catch (e) {
+        console.warn("Entries load error:", e);
+      }
+
+      try {
+        const savedSession = localStorage.getItem(LOCAL_KEYS.SESSION);
+        if (savedSession) {
+          state.currentUser = JSON.parse(savedSession);
+        }
+      } catch (e) {
+        console.warn("Session load error:", e);
+      }
+
+      try {
+        if (sessionStorage.getItem(LOCAL_KEYS.ADMIN_AUTH) === "true") {
+          state.adminAuthenticated = true;
+        }
+      } catch (e) {}
+    }
+
+    function saveLocalConfig() {
+      try {
+        localStorage.setItem(LOCAL_KEYS.CONFIG, JSON.stringify({
+          teamGeminiUrl: state.teamGeminiUrl,
+          artworks: state.artworks,
+          updatedAt: Date.now()
+        }));
+      } catch (e) {
+        showToast("브라우저 저장 공간이 부족합니다. 사진 크기를 줄여 다시 시도해 주세요.");
+      }
+    }
+
+    function saveLocalEntries() {
+      try {
+        localStorage.setItem(LOCAL_KEYS.ENTRIES, JSON.stringify(state.entries));
+      } catch (e) {
+        showToast("사진 용량이 커서 로컬 저장 공간에 일부 제한이 있을 수 있습니다.");
+      }
+    }
+
+    function saveLocalSession() {
+      try {
+        if (state.currentUser) {
+          localStorage.setItem(LOCAL_KEYS.SESSION, JSON.stringify(state.currentUser));
+        } else {
+          localStorage.removeItem(LOCAL_KEYS.SESSION);
+        }
+      } catch (e) {}
+    }
+
+    function getEntriesCollectionRef() {
+      return collection(state.db, "artifacts", state.appId, "public", "data", "entries");
+    }
+
+    function getConfigDocRef() {
+      return doc(state.db, "artifacts", state.appId, "public", "data", "config", "main");
+    }
+
+    async function syncEntryToCloud(entry) {
+      if (!state.cloudEnabled || !state.db || !entry || !entry.userId) return;
+      try {
+        const safeId = encodeURIComponent(entry.userId.trim());
+        await setDoc(doc(getEntriesCollectionRef(), safeId), entry, { merge: true });
+      } catch (e) {
+        console.warn("Cloud entry sync failed:", e);
+      }
+    }
+
+    async function deleteEntryFromCloud(userId) {
+      if (!state.cloudEnabled || !state.db || !userId) return;
+      try {
+        const safeId = encodeURIComponent(userId.trim());
+        await deleteDoc(doc(getEntriesCollectionRef(), safeId));
+      } catch (e) {
+        console.warn("Cloud delete failed:", e);
+      }
+    }
+
+    async function syncConfigToCloud() {
+      if (!state.cloudEnabled || !state.db) return;
+      try {
+        await setDoc(getConfigDocRef(), {
+          teamGeminiUrl: state.teamGeminiUrl,
+          artworks: state.artworks,
+          updatedAt: Date.now()
+        }, { merge: true });
+      } catch (e) {
+        console.warn("Cloud config sync failed:", e);
+      }
+    }
+
+    async function initFirebaseIfAvailable() {
+      const dot = document.getElementById("cloudStatusDot");
+      const text = document.getElementById("cloudStatusText");
+
+      try {
+        let firebaseConfig = null;
+        if (typeof window.__firebase_config !== "undefined" && window.__firebase_config) {
+          firebaseConfig = typeof window.__firebase_config === "string"
+            ? JSON.parse(window.__firebase_config)
+            : window.__firebase_config;
+        }
+        if (typeof window.__app_id !== "undefined" && window.__app_id) {
+          state.appId = window.__app_id;
+        }
+
+        if (!firebaseConfig || !firebaseConfig.apiKey) {
+          if (dot) dot.className = "w-2 h-2 rounded-full bg-emerald-500";
+          if (text) text.textContent = "로컬 아카이브 활성";
+          return;
+        }
+
+        const fbApp = initializeApp(firebaseConfig);
+        state.auth = getAuth(fbApp);
+        state.db = getFirestore(fbApp);
+
+        if (typeof window.__initial_auth_token !== "undefined" && window.__initial_auth_token) {
+          await signInWithEmailAndPassword(state.auth, window.__initial_auth_token.email || "", window.__initial_auth_token.password || "").catch(() => signInAnonymously(state.auth));
+        } else {
+          await signInAnonymously(state.auth);
+        }
+
+        state.cloudEnabled = true;
+        if (dot) dot.className = "w-2 h-2 rounded-full bg-emerald-500";
+        if (text) text.textContent = "실시간 클라우드 동기화";
+
+        const cfgSnap = await getDoc(getConfigDocRef());
+        if (cfgSnap.exists()) {
+          const d = cfgSnap.data();
+          if (d.teamGeminiUrl) state.teamGeminiUrl = d.teamGeminiUrl;
+          if (Array.isArray(d.artworks) && d.artworks.length === 15) {
+            state.artworks = d.artworks.map((a, idx) => ({
+              ...DEFAULT_ARTWORKS[idx],
+              ...a,
+              id: DEFAULT_ARTWORKS[idx].id,
+              image: a.image || DEFAULT_ARTWORKS[idx].image
+            }));
+          }
+          saveLocalConfig();
+          applyConfigToUI();
+        }
+
+        onSnapshot(getEntriesCollectionRef(), (snapshot) => {
+          const cloudEntries = {};
+          snapshot.forEach((docSnap) => {
+            const item = docSnap.data();
+            if (item && item.userId) {
+              cloudEntries[item.userId] = item;
+            }
+          });
+          state.entries = { ...state.entries, ...cloudEntries };
+          saveLocalEntries();
+          if (state.isAdminMode) {
+            renderArchiveDashboard();
+          }
+        });
+
+        onAuthStateChanged(state.auth, () => {});
+      } catch (err) {
+        console.warn("Firebase fallback to local storage:", err);
+        if (dot) dot.className = "w-2 h-2 rounded-full bg-emerald-500";
+        if (text) text.textContent = "로컬 아카이브 활성";
+      }
+    }
+
+    function applyConfigToUI() {
+      const linkBtn = document.getElementById("geminiReferralLinkBtn");
+      const cfgInput = document.getElementById("configGeminiUrlInput");
+      if (linkBtn) linkBtn.href = state.teamGeminiUrl || DEFAULT_TEAM_GEMINI_URL;
+      if (cfgInput) cfgInput.value = state.teamGeminiUrl || DEFAULT_TEAM_GEMINI_URL;
+
+      const hasRealPhotos = state.artworks.some(a => !a.isDefaultSvg);
+      const banner = document.getElementById("quickRealPhotoBanner");
+      if (banner) {
+        banner.classList.toggle("hidden", hasRealPhotos);
+      }
+
+      if (state.currentUser) {
+        const entry = state.entries[state.currentUser.userId];
+        if (entry && entry.assignedArtworkId) {
+          const art = state.artworks.find(a => a.id === entry.assignedArtworkId);
+          if (art) {
+            renderRevealedArtworkCard(art, entry.artworkDrawnAt);
+          }
+        }
+      }
+
+      if (state.isAdminMode) {
+        renderConfigArtworksGrid();
+      }
+    }
+
+    function getOrCreateUserEntry(userId, contact = "") {
+      const cleanId = userId.trim();
+      if (!state.entries[cleanId]) {
+        state.entries[cleanId] = {
+          userId: cleanId,
+          contact: contact.trim(),
+          assignedArtworkId: null,
+          assignedArtworkTitle: "",
+          assignedArtworkArtist: "",
+          artworkDrawnAt: null,
+          artPhoto: "",
+          artUploadedAt: null,
+          artSubmitted: false,
+          artSubmittedAt: null,
+          geminiLinkClickedAt: null,
+          geminiPhoto: "",
+          geminiUploadedAt: null,
+          completed: false,
+          completedAt: null,
+          createdAt: Date.now(),
+          updatedAt: Date.now()
+        };
+      } else if (contact && contact.trim()) {
+        state.entries[cleanId].contact = contact.trim();
+        state.entries[cleanId].updatedAt = Date.now();
+      }
+      return state.entries[cleanId];
+    }
+
+    function renderRevealedArtworkCard(art, drawnAt) {
+      const flipCard = document.getElementById("artworkFlipCard");
+      const numEl = document.getElementById("assignedArtNumber");
+      const artistBadgeEl = document.getElementById("assignedArtistBadge");
+      const imgEl = document.getElementById("assignedArtImage");
+      const titleEl = document.getElementById("assignedArtTitle");
+      const hintEl = document.getElementById("assignedArtHint");
+      const modeBadge = document.getElementById("assignedArtPhotoModeBadge");
+
+      if (!art) return;
+
+      if (numEl) numEl.textContent = `CARD #${String(art.id).padStart(2, "0")} / 15`;
+      if (artistBadgeEl) artistBadgeEl.textContent = art.artist || "작가 미상";
+      if (imgEl) {
+        imgEl.src = art.image;
+        imgEl.alt = `${art.title} - ${art.artist}`;
+      }
+      if (titleEl) titleEl.textContent = art.title;
+      if (hintEl) {
+        const timeStr = drawnAt ? ` · 배정 ${formatTimestamp(drawnAt)}` : "";
+        hintEl.textContent = `${art.artist} · 경북대학교미술관 전시작${timeStr}`;
+      }
+      if (modeBadge) {
+        if (art.isDefaultSvg) {
+          modeBadge.textContent = "작품 구도 미리보기 (원본 사진 교체 가능)";
+          modeBadge.className = "absolute top-2.5 left-2.5 bg-black/75 backdrop-blur-xs text-amber-300 text-[10px] px-2.5 py-1 rounded-full font-bold border border-white/15";
+        } else {
+          modeBadge.textContent = "✓ 실물 원본 사진 적용됨";
+          modeBadge.className = "absolute top-2.5 left-2.5 bg-emerald-700/90 backdrop-blur-xs text-white text-[10px] px-2.5 py-1 rounded-full font-bold border border-white/20";
+        }
+      }
+
+      if (flipCard) {
+        flipCard.classList.add("rotate-y-180");
+      }
+    }
+
+    function resetCardToFront() {
+      const flipCard = document.getElementById("artworkFlipCard");
+      if (flipCard) {
+        flipCard.classList.remove("rotate-y-180");
+      }
+    }
+
+    function updateMissionProgressUI() {
+      if (!state.currentUser) return;
+      const entry = state.entries[state.currentUser.userId] || {};
+      const hasArt = Boolean(entry.artPhoto);
+      const artDone = Boolean(entry.artSubmitted || hasArt);
+      const hasGemini = Boolean(entry.geminiPhoto);
+
+      const bar = document.getElementById("missionProgressBar");
+      const step1 = document.getElementById("statusStep1");
+      const step2 = document.getElementById("statusStep2");
+      const tab1Check = document.getElementById("tab1Check");
+      const tab2Check = document.getElementById("tab2Check");
+      const submitArtBtn = document.getElementById("submitArtBtn");
+
+      if (submitArtBtn) {
+        submitArtBtn.disabled = !hasArt;
+      }
+
+      let pct = 15;
+      if (entry.assignedArtworkId) pct = 30;
+      if (artDone && hasGemini) pct = 100;
+      else if (artDone || hasGemini) pct = 65;
+      else if (hasArt) pct = 50;
+
+      if (bar) bar.style.width = `${pct}%`;
+
+      if (step1) {
+        step1.innerHTML = artDone
+          ? `<span class="text-emerald-600 font-extrabold flex items-center gap-1">✓ 작품 찾기 완료</span>`
+          : `<span class="text-stone-600 flex items-center gap-1">○ 작품 찾기: 미술관 작품 촬영</span>`;
+      }
+      if (step2) {
+        step2.innerHTML = hasGemini
+          ? `<span class="text-emerald-600 font-extrabold flex items-center gap-1">✓ 추가 응모 완료</span>`
+          : `<span class="text-stone-600 flex items-center gap-1">○ 추가 응모: 제미나이 가입 캡처</span>`;
+      }
+
+      if (tab1Check) tab1Check.textContent = artDone ? "✓" : "";
+      if (tab2Check) tab2Check.textContent = hasGemini ? "✓" : "";
+
+      const artEmpty = document.getElementById("artUploadEmpty");
+      const artWrap = document.getElementById("artUploadPreviewWrap");
+      const artImg = document.getElementById("artUploadPreviewImg");
+      if (hasArt) {
+        if (artEmpty) artEmpty.classList.add("hidden");
+        if (artWrap) artWrap.classList.remove("hidden");
+        if (artImg) artImg.src = entry.artPhoto;
+      } else {
+        if (artEmpty) artEmpty.classList.remove("hidden");
+        if (artWrap) artWrap.classList.add("hidden");
+        if (artImg) artImg.src = "";
+      }
+
+      const gemEmpty = document.getElementById("geminiUploadEmpty");
+      const gemWrap = document.getElementById("geminiUploadPreviewWrap");
+      const gemImg = document.getElementById("geminiUploadPreviewImg");
+      if (hasGemini) {
+        if (gemEmpty) gemEmpty.classList.add("hidden");
+        if (gemWrap) gemWrap.classList.remove("hidden");
+        if (gemImg) gemImg.src = entry.geminiPhoto;
+      } else {
+        if (gemEmpty) gemEmpty.classList.remove("hidden");
+        if (gemWrap) gemWrap.classList.add("hidden");
+        if (gemImg) gemImg.src = "";
+      }
+
+      const finalBtn = document.getElementById("finalSubmitBtn");
+      const btnText = document.getElementById("submitBtnText");
+      const count = (artDone ? 1 : 0) + (hasGemini ? 1 : 0);
+
+      if (finalBtn && btnText) {
+        if (count === 2) {
+          finalBtn.disabled = false;
+          finalBtn.className = "w-full py-4 px-5 rounded-2xl font-black text-sm sm:text-base flex items-center justify-center gap-2 transition shadow-lg bg-gradient-to-r from-knu-red to-emerald-600 hover:opacity-95 text-white cursor-pointer";
+          btnText.textContent = "🎉 미션 완료 및 경품 추첨 응모하기 (2/2 완료)";
+        } else {
+          finalBtn.disabled = true;
+          finalBtn.className = "w-full py-4 px-5 rounded-2xl font-black text-sm sm:text-base flex items-center justify-center gap-2 transition shadow-md bg-stone-300 text-stone-500 cursor-not-allowed";
+          btnText.textContent = `미션 2가지를 모두 완료하면 추첨 응모가 활성화됩니다 (${count}/2)`;
+        }
+      }
+    }
+
+    function renderArtCompletionCard(entry) {
+      const art = state.artworks.find(a => a.id === entry.assignedArtworkId);
+      const userEl = document.getElementById("artCompletionUser");
+      const workEl = document.getElementById("artCompletionWork");
+      const photoEl = document.getElementById("artCompletionPhoto");
+      const timeEl = document.getElementById("artCompletionTime");
+
+      if (userEl) userEl.textContent = `${entry.userId} 참가자님`;
+      if (workEl) {
+        const title = entry.assignedArtworkTitle || (art && art.title) || "전시 작품";
+        const artist = entry.assignedArtworkArtist || (art && art.artist) || "";
+        workEl.textContent = artist ? `배정 작품: ${title} (${artist})` : `배정 작품: ${title}`;
+      }
+      if (photoEl) photoEl.src = entry.artPhoto || "";
+      if (timeEl) timeEl.textContent = entry.artSubmittedAt ? `제출 시각: ${formatTimestamp(entry.artSubmittedAt)}` : "";
+    }
+
+    function renderParticipantView() {
+      const viewLogin = document.getElementById("viewLogin");
+      const viewMission = document.getElementById("viewMission");
+      const viewSuccess = document.getElementById("viewSuccess");
+      const badge = document.getElementById("headerUserBadge");
+
+      if (!state.currentUser || !state.currentUser.userId) {
+        if (viewLogin) viewLogin.classList.remove("hidden");
+        if (viewMission) viewMission.classList.add("hidden");
+        if (viewSuccess) viewSuccess.classList.add("hidden");
+        if (badge) badge.classList.add("hidden");
+        return;
+      }
+
+      const entry = getOrCreateUserEntry(state.currentUser.userId, state.currentUser.contact);
+      if (badge) {
+        badge.textContent = `${entry.userId}님`;
+        badge.classList.remove("hidden");
+      }
+
+      if (entry.completed && !state.__editingSubmission) {
+        if (viewLogin) viewLogin.classList.add("hidden");
+        if (viewMission) viewMission.classList.add("hidden");
+        if (viewSuccess) viewSuccess.classList.remove("hidden");
+
+        document.getElementById("ticketUserId").textContent = entry.userId;
+        const art = state.artworks.find(a => a.id === entry.assignedArtworkId);
+        document.getElementById("ticketArtworkName").textContent = art
+          ? `#${String(art.id).padStart(2, "0")} ${art.title}`
+          : (entry.assignedArtworkTitle || "미배정");
+        document.getElementById("ticketImgArt").src = entry.artPhoto || "";
+        document.getElementById("ticketImgGemini").src = entry.geminiPhoto || "";
+        document.getElementById("ticketTimestamp").textContent = formatTimestamp(entry.completedAt);
+        return;
+      }
+
+      if (viewLogin) viewLogin.classList.add("hidden");
+      if (viewSuccess) viewSuccess.classList.add("hidden");
+      if (viewMission) viewMission.classList.remove("hidden");
+
+      const dispUser = document.getElementById("displayCurrentUser");
+      if (dispUser) {
+        dispUser.textContent = `${entry.userId} (${entry.contact || "연락처 등록됨"})`;
+      }
+
+      if (entry.assignedArtworkId) {
+        const art = state.artworks.find(a => a.id === entry.assignedArtworkId) || state.artworks[0];
+        renderRevealedArtworkCard(art, entry.artworkDrawnAt);
+      } else {
+        resetCardToFront();
+      }
+
+      updateMissionProgressUI();
+      switchMissionTab(state.currentMissionTab || 1);
+    }
+
+    function switchMissionTab(tabNum) {
+      state.currentMissionTab = tabNum;
+      const tab1Btn = document.getElementById("tabBtn1");
+      const tab2Btn = document.getElementById("tabBtn2");
+      const content1 = document.getElementById("tabContent1");
+      const artCompletion = document.getElementById("artCompletion");
+      const content2 = document.getElementById("tabContent2");
+      const lotteryBar = document.getElementById("lotterySubmissionBar");
+      const entry = state.currentUser ? state.entries[state.currentUser.userId] : null;
+      const artSubmitted = Boolean(entry && entry.artSubmitted);
+
+      if (tabNum === 1) {
+        if (tab1Btn) tab1Btn.className = "py-3 px-3 text-xs font-extrabold border-b-2 border-knu-red text-stone-900 flex items-center justify-center gap-1.5 transition";
+        if (tab2Btn) tab2Btn.className = "py-3 px-3 text-xs font-bold border-b-2 border-transparent text-stone-500 hover:text-stone-800 flex items-center justify-center gap-1.5 transition";
+        if (content1) content1.classList.toggle("hidden", artSubmitted);
+        if (artCompletion) {
+          artCompletion.classList.toggle("hidden", !artSubmitted);
+          if (artSubmitted && entry) renderArtCompletionCard(entry);
+        }
+        if (content2) content2.classList.add("hidden");
+        if (lotteryBar) lotteryBar.classList.add("hidden");
+      } else {
+        if (tab2Btn) tab2Btn.className = "py-3 px-3 text-xs font-extrabold border-b-2 border-blue-600 text-blue-700 flex items-center justify-center gap-1.5 transition";
+        if (tab1Btn) tab1Btn.className = "py-3 px-3 text-xs font-bold border-b-2 border-transparent text-stone-500 hover:text-stone-800 flex items-center justify-center gap-1.5 transition";
+        if (content1) content1.classList.add("hidden");
+        if (artCompletion) artCompletion.classList.add("hidden");
+        if (content2) content2.classList.remove("hidden");
+        if (lotteryBar) lotteryBar.classList.remove("hidden");
+      }
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    function renderConfigArtworksGrid() {
+      const grid = document.getElementById("configArtworksGrid");
+      if (!grid) return;
+
+      grid.innerHTML = state.artworks.map(art => `
+        <div class="border border-stone-200 rounded-2xl p-3.5 bg-stone-50/60 flex flex-col justify-between gap-3">
+          <div class="flex gap-3 items-start">
+            <img
+              src="${art.image}"
+              alt="${escapeHtml(art.title)}"
+              onclick="window.app.openLightbox('${escapeHtml(art.title)} (${escapeHtml(art.artist)})', this.src)"
+              class="w-20 h-20 rounded-xl object-cover bg-white border border-stone-200 shrink-0 cursor-zoom-in"
+            />
+            <div class="flex-1 min-w-0 space-y-1.5">
+              <div class="flex items-center justify-between">
+                <span class="text-[11px] font-black text-knu-red">CARD #${String(art.id).padStart(2, "0")}</span>
+                <span class="text-[10px] px-2 py-0.5 rounded-full font-bold ${art.isDefaultSvg ? "bg-amber-100 text-amber-800" : "bg-emerald-100 text-emerald-800"}">
+                  ${art.isDefaultSvg ? "구도 프리뷰" : "실물 사진 적용됨"}
+                </span>
+              </div>
+              <input
+                type="text"
+                value="${escapeHtml(art.title)}"
+                onchange="window.app.updateArtworkMeta(${art.id}, 'title', this.value)"
+                placeholder="작품명 입력"
+                class="w-full px-2.5 py-1.5 rounded-lg bg-white border border-stone-200 text-xs font-bold text-stone-800"
+              />
+              <input
+                type="text"
+                value="${escapeHtml(art.artist)}"
+                onchange="window.app.updateArtworkMeta(${art.id}, 'artist', this.value)"
+                placeholder="작가명 입력"
+                class="w-full px-2.5 py-1.5 rounded-lg bg-white border border-stone-200 text-[11px] text-stone-700"
+              />
+            </div>
+          </div>
+
+          <label class="cursor-pointer w-full py-2 px-3 rounded-xl bg-white hover:bg-stone-100 border border-stone-300 text-center text-xs font-extrabold text-stone-700 transition">
+            📷 이 작품(#${art.id}) 사진 파일 선택/교체
+            <input
+              type="file"
+              accept="image/*"
+              class="hidden"
+              onchange="window.app.handleSingleArtworkUpload(event, ${art.id})"
+            />
+          </label>
+        </div>
+      `).join("");
+    }
+
+    function renderArchiveDashboard() {
+      const allEntries = Object.values(state.entries);
+      const completedEntries = allEntries.filter(e => e.completed || (e.artPhoto && e.geminiPhoto));
+
+      const totalCountEl = document.getElementById("adminTotalCount");
+      const statTotalEl = document.getElementById("statTotalUsers");
+      const statCompEl = document.getElementById("statCompletedUsers");
+
+      if (totalCountEl) totalCountEl.textContent = String(allEntries.length);
+      if (statTotalEl) statTotalEl.textContent = `${allEntries.length}명`;
+      if (statCompEl) statCompEl.textContent = `${completedEntries.length}명`;
+
+      renderArchiveList();
+    }
+
+    function renderArchiveList() {
+      const container = document.getElementById("archiveListContainer");
+      if (!container) return;
+
+      const query = (document.getElementById("archiveSearchInput")?.value || "").trim().toLowerCase();
+      const filter = document.getElementById("archiveFilterSelect")?.value || "all";
+
+      let list = Object.values(state.entries).sort((a, b) => (b.updatedAt || b.createdAt || 0) - (a.updatedAt || a.createdAt || 0));
+
+      if (filter === "completed") {
+        list = list.filter(e => e.completed || (e.artPhoto && e.geminiPhoto));
+      } else if (filter === "incomplete") {
+        list = list.filter(e => !(e.completed || (e.artPhoto && e.geminiPhoto)));
+      }
+
+      if (query) {
+        list = list.filter(e => {
+          const art = state.artworks.find(a => a.id === e.assignedArtworkId);
+          const artTitle = art ? `${art.title} ${art.artist}` : "";
+          return (
+            (e.userId || "").toLowerCase().includes(query) ||
+            (e.contact || "").toLowerCase().includes(query) ||
+            artTitle.toLowerCase().includes(query)
+          );
+        });
+      }
+
+      if (list.length === 0) {
+        container.innerHTML = `
+          <div class="col-span-full py-12 text-center bg-stone-50 rounded-2xl border border-dashed border-stone-300 text-stone-500 text-xs">
+            조건에 해당하는 응모자 아카이브 데이터가 없습니다.
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = list.map(entry => {
+        const isDone = Boolean(entry.completed || (entry.artPhoto && entry.geminiPhoto));
+        const art = state.artworks.find(a => a.id === entry.assignedArtworkId);
+        const artLabel = art ? `#${String(art.id).padStart(2, "0")} ${art.title} (${art.artist})` : "작품 카드 미배정";
+
+        return `
+          <div class="rounded-2xl border ${isDone ? "border-emerald-300 bg-emerald-50/20" : "border-stone-200 bg-white"} p-4 flex flex-col justify-between gap-3 shadow-2xs">
+            <div class="space-y-2">
+              <div class="flex items-start justify-between gap-2">
+                <div>
+                  <div class="text-sm font-black text-stone-900">${escapeHtml(entry.userId)}</div>
+                  <div class="text-xs text-stone-500 font-medium">${escapeHtml(entry.contact || "연락처 미입력")}</div>
+                </div>
+                <span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold shrink-0 ${isDone ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800"}">
+                  ${isDone ? "✓ 미션 성공 (2/2)" : "진행 중"}
+                </span>
+              </div>
+
+              <div class="text-xs bg-stone-100 px-3 py-2 rounded-xl text-stone-700 font-semibold">
+                🎨 배정 작품: <span class="text-stone-900 font-extrabold">${escapeHtml(artLabel)}</span>
+              </div>
+
+              <div class="grid grid-cols-2 gap-2 pt-1">
+                <div class="border border-stone-200 rounded-xl p-1.5 bg-white">
+                  <div class="text-[10px] font-bold text-stone-500 mb-1">1. 미술관 현장 사진</div>
+                  ${entry.artPhoto
+                    ? `<img src="${entry.artPhoto}" onclick="window.app.openLightbox('${escapeHtml(entry.userId)} - 미술관 인증', this.src)" class="w-full h-24 object-cover rounded-lg cursor-zoom-in" />`
+                    : `<div class="w-full h-24 rounded-lg bg-stone-100 flex items-center justify-center text-[11px] text-stone-400">미첨부</div>`
+                  }
+                </div>
+                <div class="border border-stone-200 rounded-xl p-1.5 bg-white">
+                  <div class="text-[10px] font-bold text-stone-500 mb-1">2. 제미나이 가입 캡처</div>
+                  ${entry.geminiPhoto
+                    ? `<img src="${entry.geminiPhoto}" onclick="window.app.openLightbox('${escapeHtml(entry.userId)} - 제미나이 인증', this.src)" class="w-full h-24 object-cover rounded-lg cursor-zoom-in" />`
+                    : `<div class="w-full h-24 rounded-lg bg-stone-100 flex items-center justify-center text-[11px] text-stone-400">미첨부</div>`
+                  }
+                </div>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between pt-2 border-t border-stone-100 text-[11px] text-stone-400">
+              <span>${formatTimestamp(entry.completedAt || entry.updatedAt || entry.createdAt)}</span>
+              <button
+                onclick="window.app.deleteEntry('${escapeHtml(entry.userId)}')"
+                class="text-rose-600 hover:text-rose-800 font-bold"
+              >
+                삭제
+              </button>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function matchFileToArtworkId(fileName, fallbackIndex) {
+      const lower = (fileName || "").toLowerCase();
+
+      const numMatch = lower.match(/(?:^|[^0-9])(1[0-5]|[1-9])(?:[^0-9]|$)/);
+      if (numMatch) {
+        const n = parseInt(numMatch[1], 10);
+        if (n >= 1 && n <= 15) return n;
+      }
+
+      const rules = [
+        { id: 1, keys: ["표준 사용법", "how to be", "normal", "박미나"] },
+        { id: 2, keys: ["노아", "950", "권용주"] },
+        { id: 3, keys: ["비상시", "깨뜨리시오", "손승범"] },
+        { id: 4, keys: ["나이스 투 미츄", "nice to meet"] },
+        { id: 5, keys: ["당신은 오늘 어땠나요", "하단"] },
+        { id: 6, keys: ["대중들", "조혜진"] },
+        { id: 7, keys: ["동그라미", "모서리", "이소연"] },
+        { id: 8, keys: ["오직", "only"] },
+        { id: 9, keys: ["표준자"] },
+        { id: 10, keys: ["아아아아아", "aaaaaa"] },
+        { id: 11, keys: ["숫자도감", "장태원"] },
+        { id: 12, keys: ["평화로운 사람들"] },
+        { id: 13, keys: ["사라지는 책", "구민자"] },
+        { id: 14, keys: ["가나다"] },
+        { id: 15, keys: ["유령과 바다", "뫼비우스", "김우진"] }
+      ];
+
+      for (const r of rules) {
+        if (r.keys.some(k => lower.includes(k))) {
+          return r.id;
+        }
+      }
+
+      return ((fallbackIndex) % 15) + 1;
+    }
+
+    let luckySpinInterval = null;
+
+    window.app = {
+      goHome() {
+        state.isAdminMode = false;
+        state.__editingSubmission = false;
+        document.getElementById("adminContainer")?.classList.add("hidden");
+        document.getElementById("participantContainer")?.classList.remove("hidden");
+        renderParticipantView();
+      },
+
+      handleStartEvent(e) {
+        e.preventDefault();
+        const userIdInput = document.getElementById("inputUserId");
+        const contactInput = document.getElementById("inputUserContact");
+        const userId = (userIdInput?.value || "").trim();
+        const contact = (contactInput?.value || "").trim();
+
+        if (!userId) {
+          showToast("참가자 아이디를 입력해 주세요!");
+          userIdInput?.focus();
+          return;
+        }
+        if (!contact) {
+          showToast("당첨 안내 연락처를 입력해 주세요!");
+          contactInput?.focus();
+          return;
+        }
+
+        state.currentUser = { userId, contact };
+        saveLocalSession();
+
+        const entry = getOrCreateUserEntry(userId, contact);
+        if (!entry.assignedArtworkId) {
+          const randomArt = state.artworks[Math.floor(Math.random() * state.artworks.length)];
+          entry.assignedArtworkId = randomArt.id;
+          entry.assignedArtworkTitle = randomArt.title;
+          entry.assignedArtworkArtist = randomArt.artist;
+          entry.artworkDrawnAt = Date.now();
+        }
+        entry.updatedAt = Date.now();
+
+        saveLocalEntries();
+        syncEntryToCloud(entry);
+
+        state.__editingSubmission = false;
+        state.currentMissionTab = 1;
+        renderParticipantView();
+        showToast(`${userId}님, 오늘의 랜덤 작품 카드가 배정되었습니다!`);
+      },
+
+      logoutUser() {
+        state.currentUser = null;
+        state.__editingSubmission = false;
+        saveLocalSession();
+        resetCardToFront();
+        renderParticipantView();
+      },
+
+      switchMissionTab(tabNum) {
+        switchMissionTab(tabNum);
+      },
+
+      drawRandomArtwork() {
+        if (!state.currentUser) return;
+        const entry = getOrCreateUserEntry(state.currentUser.userId, state.currentUser.contact);
+
+        if (!entry.assignedArtworkId) {
+          const randomArt = state.artworks[Math.floor(Math.random() * state.artworks.length)];
+          entry.assignedArtworkId = randomArt.id;
+          entry.assignedArtworkTitle = randomArt.title;
+          entry.assignedArtworkArtist = randomArt.artist;
+          entry.artworkDrawnAt = Date.now();
+          entry.updatedAt = Date.now();
+          saveLocalEntries();
+          syncEntryToCloud(entry);
+        }
+
+        const art = state.artworks.find(a => a.id === entry.assignedArtworkId) || state.artworks[0];
+        renderRevealedArtworkCard(art, entry.artworkDrawnAt);
+        updateMissionProgressUI();
+        showToast(`#${art.id} "${art.title}" 작품 카드가 공개되었습니다!`);
+      },
+
+      redrawArtwork() {
+        if (!state.currentUser) return;
+        const entry = getOrCreateUserEntry(state.currentUser.userId, state.currentUser.contact);
+        const candidates = state.artworks.filter(a => a.id !== entry.assignedArtworkId);
+        const pool = candidates.length > 0 ? candidates : state.artworks;
+        const nextArt = pool[Math.floor(Math.random() * pool.length)];
+
+        entry.assignedArtworkId = nextArt.id;
+        entry.assignedArtworkTitle = nextArt.title;
+        entry.assignedArtworkArtist = nextArt.artist;
+        entry.artworkDrawnAt = Date.now();
+        entry.updatedAt = Date.now();
+
+        saveLocalEntries();
+        syncEntryToCloud(entry);
+
+        resetCardToFront();
+        setTimeout(() => {
+          renderRevealedArtworkCard(nextArt, entry.artworkDrawnAt);
+        }, 140);
+        showToast(`새로운 작품 카드 (#${nextArt.id} ${nextArt.title})로 변경되었습니다!`);
+      },
+
+      openAssignedArtworkZoom() {
+        if (!state.currentUser) return;
+        const entry = state.entries[state.currentUser.userId];
+        const art = state.artworks.find(a => a.id === entry?.assignedArtworkId);
+        if (!art) return;
+        this.openLightbox(`#${String(art.id).padStart(2, "0")} ${art.title} — ${art.artist}`, art.image);
+      },
+
+      async handlePhotoUpload(event, type) {
+        const file = event.target.files?.[0];
+        if (!file || !state.currentUser) return;
+
+        try {
+          showToast("인증 이미지를 처리하고 있습니다...");
+          const compressedDataUrl = await compressImageFile(file, 1100, 0.8);
+          const entry = getOrCreateUserEntry(state.currentUser.userId, state.currentUser.contact);
+
+          if (!entry.assignedArtworkId) {
+            const randomArt = state.artworks[Math.floor(Math.random() * state.artworks.length)];
+            entry.assignedArtworkId = randomArt.id;
+            entry.assignedArtworkTitle = randomArt.title;
+            entry.assignedArtworkArtist = randomArt.artist;
+            entry.artworkDrawnAt = Date.now();
+          }
+
+          if (type === "art") {
+            entry.artPhoto = compressedDataUrl;
+            entry.artUploadedAt = Date.now();
+            showToast("미술관 작품 인증 사진이 첨부되었습니다!");
+          } else if (type === "gemini") {
+            entry.geminiPhoto = compressedDataUrl;
+            entry.geminiUploadedAt = Date.now();
+            showToast("제미나이 가입 인증 캡처가 첨부되었습니다!");
+          }
+
+          entry.updatedAt = Date.now();
+          saveLocalEntries();
+          syncEntryToCloud(entry);
+          updateMissionProgressUI();
+        } catch (err) {
+          console.error(err);
+          showToast("이미지를 불러오는 중 오류가 발생했습니다. 다른 사진으로 시도해 주세요.");
+        } finally {
+          event.target.value = "";
+        }
+      },
+
+      submitArtMission() {
+        if (!state.currentUser) return;
+        const entry = getOrCreateUserEntry(state.currentUser.userId, state.currentUser.contact);
+        if (!entry.artPhoto) {
+          showToast("먼저 촬영한 작품 사진을 첨부해 주세요.");
+          return;
+        }
+        entry.artSubmitted = true;
+        entry.artSubmittedAt = Date.now();
+        entry.updatedAt = Date.now();
+        saveLocalEntries();
+        syncEntryToCloud(entry);
+        updateMissionProgressUI();
+        switchMissionTab(1);
+        if (window.confetti) {
+          window.confetti({ particleCount: 70, spread: 60, origin: { y: 0.7 } });
+        }
+        showToast("작품 찾기 미션이 완료되었습니다!");
+      },
+
+      recordLinkClick() {
+        if (!state.currentUser) return;
+        const entry = getOrCreateUserEntry(state.currentUser.userId, state.currentUser.contact);
+        entry.geminiLinkClickedAt = Date.now();
+        entry.updatedAt = Date.now();
+        saveLocalEntries();
+        syncEntryToCloud(entry);
+      },
+
+      submitFinalMission() {
+        if (!state.currentUser) return;
+        const entry = getOrCreateUserEntry(state.currentUser.userId, state.currentUser.contact);
+
+        if (!entry.artPhoto || !entry.geminiPhoto) {
+          showToast("미술관 작품 사진과 제미나이 가입 캡처 2가지를 모두 첨부해 주세요!");
+          return;
+        }
+
+        entry.artSubmitted = true;
+        if (!entry.artSubmittedAt) entry.artSubmittedAt = Date.now();
+        entry.completed = true;
+        entry.completedAt = Date.now();
+        entry.updatedAt = Date.now();
+
+        saveLocalEntries();
+        syncEntryToCloud(entry);
+
+        state.__editingSubmission = false;
+        renderParticipantView();
+
+        if (window.confetti) {
+          window.confetti({
+            particleCount: 110,
+            spread: 75,
+            origin: { y: 0.65 }
+          });
+        }
+        showToast("🎉 미션 완료 및 경품 추첨 응모가 접수되었습니다!");
+      },
+
+      editSubmission() {
+        state.__editingSubmission = true;
+        renderParticipantView();
+      },
+
+      toggleAdminMode() {
+        state.isAdminMode = !state.isAdminMode;
+        const adminContainer = document.getElementById("adminContainer");
+        const participantContainer = document.getElementById("participantContainer");
+        const toggleText = document.getElementById("adminToggleText");
+
+        if (state.isAdminMode) {
+          participantContainer?.classList.add("hidden");
+          adminContainer?.classList.remove("hidden");
+          if (toggleText) toggleText.textContent = "참가자 화면으로";
+          this.switchAdminTab("archive");
+          renderArchiveDashboard();
+          renderConfigArtworksGrid();
+        } else {
+          adminContainer?.classList.add("hidden");
+          participantContainer?.classList.remove("hidden");
+          if (toggleText) toggleText.textContent = "아카이브 / 운영진 관리";
+          renderParticipantView();
+        }
+        if (window.lucide) window.lucide.createIcons();
+      },
+
+      logoutAdmin() {
+        state.adminAuthenticated = false;
+        try {
+          sessionStorage.removeItem(LOCAL_KEYS.ADMIN_AUTH);
+        } catch (e) {}
+        state.isAdminMode = false;
+        document.getElementById("adminContainer")?.classList.add("hidden");
+        document.getElementById("participantContainer")?.classList.remove("hidden");
+        const toggleText = document.getElementById("adminToggleText");
+        if (toggleText) toggleText.textContent = "아카이브 / 운영진 관리";
+        renderParticipantView();
+        showToast("운영진 모드에서 로그아웃되었습니다.");
+      },
+
+      switchAdminTab(tabName) {
+        const archiveBtn = document.getElementById("adminTabArchiveBtn");
+        const configBtn = document.getElementById("adminTabConfigBtn");
+        const archiveView = document.getElementById("adminViewArchive");
+        const configView = document.getElementById("adminViewConfig");
+
+        if (tabName === "archive") {
+          archiveBtn?.classList.replace("bg-stone-800", "bg-knu-red");
+          archiveBtn?.classList.remove("text-stone-300");
+          archiveBtn?.classList.add("text-white");
+
+          configBtn?.classList.replace("bg-knu-red", "bg-stone-800");
+          configBtn?.classList.add("text-stone-300");
+
+          archiveView?.classList.remove("hidden");
+          configView?.classList.add("hidden");
+          renderArchiveDashboard();
+        } else {
+          configBtn?.classList.replace("bg-stone-800", "bg-knu-red");
+          configBtn?.classList.remove("text-stone-300");
+          configBtn?.classList.add("text-white");
+
+          archiveBtn?.classList.replace("bg-knu-red", "bg-stone-800");
+          archiveBtn?.classList.add("text-stone-300");
+
+          configView?.classList.remove("hidden");
+          archiveView?.classList.add("hidden");
+          renderConfigArtworksGrid();
+        }
+      },
+
+      updateArtworkMeta(artId, field, value) {
+        const target = state.artworks.find(a => a.id === artId);
+        if (!target) return;
+        target[field] = value;
+        if (field === "artist") {
+          target.hint = `${value} · 경북대학교미술관 전시작`;
+        }
+        saveLocalConfig();
+        syncConfigToCloud();
+        applyConfigToUI();
+      },
+
+      async handleSingleArtworkUpload(event, artId) {
+        const file = event.target.files?.[0];
+        if (!file) return;
+        try {
+          showToast(`#${artId}번 작품 사진을 적용 중입니다...`);
+          const dataUrl = await compressImageFile(file, 1200, 0.84);
+          const target = state.artworks.find(a => a.id === artId);
+          if (target) {
+            target.image = dataUrl;
+            target.isDefaultSvg = false;
+            saveLocalConfig();
+            await syncConfigToCloud();
+            applyConfigToUI();
+            renderConfigArtworksGrid();
+            showToast(`#${artId}번 "${target.title}" 실물 사진이 적용되었습니다!`);
+          }
+        } catch (err) {
+          console.error(err);
+          showToast("작품 사진 적용 중 오류가 발생했습니다.");
+        } finally {
+          event.target.value = "";
+        }
+      },
+
+      async handleBulkArtworkUpload(event) {
+        const files = Array.from(event.target.files || []);
+        if (files.length === 0) return;
+
+        showToast(`${files.length}개 작품 사진을 자동 매칭하여 저장 중입니다...`);
+        let matchedCount = 0;
+
+        for (let i = 0; i < files.length; i++) {
+          const file = files[i];
+          try {
+            const targetId = matchFileToArtworkId(file.name, i);
+            const dataUrl = await compressImageFile(file, 1200, 0.84);
+            const art = state.artworks.find(a => a.id === targetId);
+            if (art) {
+              art.image = dataUrl;
+              art.isDefaultSvg = false;
+              matchedCount++;
+            }
+          } catch (e) {
+            console.warn("Bulk file error:", file.name, e);
+          }
+        }
+
+        saveLocalConfig();
+        await syncConfigToCloud();
+        applyConfigToUI();
+        renderConfigArtworksGrid();
+        event.target.value = "";
+        showToast(`✅ ${matchedCount}장의 원본 작품 사진이 카드에 매칭 및 저장되었습니다!`);
+      },
+
+      async resetDefaultArtworks() {
+        state.artworks = DEFAULT_ARTWORKS.map(a => ({ ...a }));
+        saveLocalConfig();
+        await syncConfigToCloud();
+        applyConfigToUI();
+        renderConfigArtworksGrid();
+        showToast("기본 15종 작품 프리뷰로 초기화되었습니다.");
+      },
+
+      async saveGlobalConfig() {
+        const urlInput = document.getElementById("configGeminiUrlInput");
+        const newUrl = (urlInput?.value || "").trim();
+        if (!newUrl) {
+          showToast("제미나이 가입 링크 URL을 입력해 주세요.");
+          return;
+        }
+        state.teamGeminiUrl = newUrl;
+        saveLocalConfig();
+        await syncConfigToCloud();
+        applyConfigToUI();
+        showToast("제미나이 가입 링크 및 15종 작품 설정이 저장되었습니다!");
+      },
+
+      async deleteEntry(userId) {
+        if (!confirm(`"${userId}" 참가자의 아카이브 기록을 삭제하시겠습니까?`)) return;
+        delete state.entries[userId];
+        if (state.currentUser && state.currentUser.userId === userId) {
+          state.currentUser = null;
+          saveLocalSession();
+        }
+        saveLocalEntries();
+        await deleteEntryFromCloud(userId);
+        renderArchiveDashboard();
+        showToast(`${userId} 기록이 삭제되었습니다.`);
+      },
+
+      openLuckyDrawModal() {
+        const completed = Object.values(state.entries).filter(e => e.completed || (e.artPhoto && e.geminiPhoto));
+        const modal = document.getElementById("luckyDrawModal");
+        const idEl = document.getElementById("luckyWinnerId");
+        const contactEl = document.getElementById("luckyWinnerContact");
+        const artEl = document.getElementById("luckyWinnerArt");
+
+        if (completed.length === 0) {
+          if (idEl) idEl.textContent = "응모 완료자 없음";
+          if (contactEl) contactEl.textContent = "사진 2종을 모두 제출한 참가자가 아직 없습니다.";
+          if (artEl) artEl.textContent = "-";
+        } else {
+          if (idEl) idEl.textContent = `총 ${completed.length}명 추첨 대기 중`;
+          if (contactEl) contactEl.textContent = "'당첨자 뽑기!' 버튼을 눌러주세요";
+          if (artEl) artEl.textContent = "-";
+        }
+
+        modal?.classList.remove("hidden");
+      },
+
+      closeLuckyDrawModal() {
+        if (luckySpinInterval) {
+          clearInterval(luckySpinInterval);
+          luckySpinInterval = null;
+        }
+        document.getElementById("luckyDrawModal")?.classList.add("hidden");
+      },
+
+      startLuckyDrawSpin() {
+        const completed = Object.values(state.entries).filter(e => e.completed || (e.artPhoto && e.geminiPhoto));
+        if (completed.length === 0) {
+          showToast("추첨 대상(사진 2종 완료자)이 없습니다.");
+          return;
+        }
+
+        if (luckySpinInterval) clearInterval(luckySpinInterval);
+
+        const idEl = document.getElementById("luckyWinnerId");
+        const contactEl = document.getElementById("luckyWinnerContact");
+        const artEl = document.getElementById("luckyWinnerArt");
+
+        let ticks = 0;
+        luckySpinInterval = setInterval(() => {
+          const candidate = completed[Math.floor(Math.random() * completed.length)];
+          const art = state.artworks.find(a => a.id === candidate.assignedArtworkId);
+          if (idEl) idEl.textContent = candidate.userId;
+          if (contactEl) contactEl.textContent = candidate.contact || "연락처 없음";
+          if (artEl) artEl.textContent = art ? `인증 작품: #${art.id} ${art.title}` : "";
+
+          ticks++;
+          if (ticks >= 18) {
+            clearInterval(luckySpinInterval);
+            luckySpinInterval = null;
+            const winner = completed[Math.floor(Math.random() * completed.length)];
+            const wArt = state.artworks.find(a => a.id === winner.assignedArtworkId);
+            if (idEl) idEl.textContent = `🎉 ${winner.userId}`;
+            if (contactEl) contactEl.textContent = `연락처: ${winner.contact || "-"}`;
+            if (artEl) artEl.textContent = wArt ? `인증 작품: #${wArt.id} ${wArt.title} (${wArt.artist})` : "미션 2종 완료";
+            if (window.confetti) {
+              window.confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
+            }
+          }
+        }, 85);
+      },
+
+      exportEntriesCSV() {
+        const rows = Object.values(state.entries);
+        if (rows.length === 0) {
+          showToast("내보낼 아카이브 데이터가 없습니다.");
+          return;
+        }
+
+        const headers = ["참가자ID", "연락처", "배정작품번호", "배정작품명", "작가명", "미술관사진첨부", "제미나이캡처첨부", "추첨응모완료여부", "완료일시"];
+        const csvLines = [headers.join(",")];
+
+        rows.forEach(r => {
+          const art = state.artworks.find(a => a.id === r.assignedArtworkId);
+          const isDone = Boolean(r.completed || (r.artPhoto && r.geminiPhoto));
+          const line = [
+            r.userId || "",
+            r.contact || "",
+            art ? art.id : "",
+            art ? art.title : "",
+            art ? art.artist : "",
+            r.artPhoto ? "Y" : "N",
+            r.geminiPhoto ? "Y" : "N",
+            isDone ? "완료" : "미완료",
+            formatTimestamp(r.completedAt || r.updatedAt)
+          ].map(val => `"${String(val).replaceAll('"', '""')}"`).join(",");
+          csvLines.push(line);
+        });
+
+        const blob = new Blob(["\uFEFF" + csvLines.join("\n")], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `knu_art_gemini_archive_${new Date().toISOString().slice(0, 10)}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast("CSV 파일이 다운로드되었습니다.");
+      },
+
+      openLightbox(caption, src) {
+        if (!src) return;
+        const modal = document.getElementById("photoLightboxModal");
+        const capEl = document.getElementById("lightboxCaption");
+        const imgEl = document.getElementById("lightboxImg");
+        if (capEl) capEl.textContent = caption || "상세보기";
+        if (imgEl) imgEl.src = src;
+        modal?.classList.remove("hidden");
+      },
+
+      closeLightbox() {
+        document.getElementById("photoLightboxModal")?.classList.add("hidden");
+      }
+    };
+
+    window.addEventListener("DOMContentLoaded", async () => {
+      loadLocalData();
+      applyConfigToUI();
+      renderParticipantView();
+      if (window.lucide) window.lucide.createIcons();
+      await initFirebaseIfAvailable();
+    });
+  </script>
+</body>
+</html>
